@@ -1,0 +1,9 @@
+.message {
+    width: 280px;
+    color: var(--colors-grey700);
+    padding: var(--spacers-dp16) var(--spacers-dp8) var(--spacers-dp24);
+}
+.menu {
+    max-height: 70vh;
+    overflow-y: auto;
+}
