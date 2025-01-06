@@ -23,10 +23,23 @@ const query = {
                 'displayName',
                 'dataApprovalLevels',
                 'periodType',
-                'dataSets[id,displayName,periodType,formType]',
+                'dataSets[dataSetElements[dataElement[id,displayName]],id,displayName,periodType,name,categoryCombo[isDefault,id,displayName,name,categories[displayName,name,id,categoryOptions[id,displayName,name]],categoryOptionCombos[id,displayName,categoryOptions]]]'
             ],
         },
     },
+    metadata: {
+        resource: 'categoryCombos',
+        params: {
+            paging: false,
+            fields: [
+                'id',
+                'displayName',
+                'isDefault',
+                'categories[displayName,name,id,categoryOptions[id,displayName]]',
+                'categoryOptionCombos[id,displayName,categoryOptions]',
+            ],
+        },
+    }
 }
 
 const AppProvider = ({ children }) => {
@@ -51,10 +64,12 @@ const AppProvider = ({ children }) => {
 
     const { authorities, organisationUnits } = data.me
     const { dataApprovalWorkflows } = data.dataApprovalWorkflows
+    const { metadata } = data
     const providerValue = {
         authorities,
         organisationUnits,
         dataApprovalWorkflows,
+        metadata
     }
 
     return (

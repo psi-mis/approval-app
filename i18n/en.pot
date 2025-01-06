@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2021-10-07T11:59:16.763Z\n"
-"PO-Revision-Date: 2021-10-07T11:59:16.763Z\n"
+"POT-Creation-Date: 2025-01-03T11:48:06.642Z\n"
+"PO-Revision-Date: 2025-01-03T11:48:06.642Z\n"
 
 msgid "Not authorized"
 msgstr "Not authorized"
@@ -97,8 +97,18 @@ msgstr ""
 msgid "Retry loading data set"
 msgstr "Retry loading data set"
 
-msgid "This data set doesn't have any data for {{- period}} in {{- orgUnit}}."
-msgstr "This data set doesn't have any data for {{- period}} in {{- orgUnit}}."
+msgid ""
+"This data set doesn't have any data for {{- period}} in {{- orgUnit}} and "
+"{{- categoryOptionCombo}}."
+msgstr ""
+"This data set doesn't have any data for {{- period}} in {{- orgUnit}} and "
+"{{- categoryOptionCombo}}."
+
+msgid "Data Element"
+msgstr "Data Element"
+
+msgid "Value"
+msgstr "Value"
 
 msgid "1 data set"
 msgstr "1 data set"
@@ -228,6 +238,28 @@ msgstr "Financial year (Start July)"
 
 msgid "Financial year (Start April)"
 msgstr "Financial year (Start April)"
+
+msgid "Category Option Combo"
+msgstr "Category Option Combo"
+
+msgid "Choose a category option combo"
+msgstr "Choose a category option combo"
+
+msgid "Choose a combination"
+msgstr "Choose a combination"
+
+msgid "No available options"
+msgstr "No available options"
+
+msgid ""
+"There are no options for {{categoryName}} for the selected period or "
+"organisation unit."
+msgstr ""
+"There are no options for {{categoryName}} for the selected period or "
+"organisation unit."
+
+msgid "Hide menu"
+msgstr "Hide menu"
 
 msgid "Clear selections"
 msgstr "Clear selections"

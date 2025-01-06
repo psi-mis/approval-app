@@ -11,23 +11,25 @@ import {
 import styles from './display.module.css'
 import { TableCustomDataSet } from './table-custom-data-set.js'
 import { Table } from './table.js'
+import { getDataSetsInWorkflowByCategoryOptionCombo } from '../../utils/caterogy-combo-utils.js'
 
 const query = {
-    dataSetReport: {
-        resource: 'dataSetReport',
-        params: ({ dataSetId, periodIds, orgUnit }) => ({
-            // arrays are being handled by the app runtime
-            pe: periodIds,
-            ds: dataSetId,
-            ou: orgUnit.id,
+    dataValueSets: {
+        resource: 'dataValueSets',
+        params: ({ periodIds, dataSetId, orgUnit, categoryOptionCombo }) => ({
+            // // arrays are being handled by the app runtime
+            period: periodIds,
+            dataSet: dataSetId,
+            orgUnit: orgUnit.id,
+            attributeOptionCombo: categoryOptionCombo.id
         }),
     },
 }
 
 const Display = ({ dataSetId }) => {
     const selection = useSelectionContext()
-    const { orgUnit, workflow, period } = selection
-    const { dataSets } = workflow
+    const { orgUnit, workflow, period, categoryOptionCombo } = selection
+    const dataSets = getDataSetsInWorkflowByCategoryOptionCombo(workflow, categoryOptionCombo)
     const selectedDataSet = dataSets.find(({ id }) => id === dataSetId)
     const periodIds = selectedDataSet
         ? getFixedPeriodsForTypeAndDateRange(
@@ -40,19 +42,19 @@ const Display = ({ dataSetId }) => {
     const { called, fetching, data, error, refetch } = useDataQuery(query, {
         lazy: true,
     })
-    const tables = data?.dataSetReport
-    const fetchDataSet = () => refetch({ periodIds, dataSetId, orgUnit })
+    const dataValues = data?.dataValueSets.dataValues;
+    const fetchDataValues = () => refetch({periodIds, dataSetId, orgUnit, categoryOptionCombo})
 
     useEffect(
         () => {
             if (periodIds.length && dataSetId) {
-                fetchDataSet()
+                fetchDataValues();
             }
         },
         // joining so this produces a primitive value
         [periodIds.join(','), dataSetId]
     )
-
+    
     if (!dataSets || dataSets.length === 0) {
         return (
             <div className={styles.noData}>
@@ -100,7 +102,7 @@ const Display = ({ dataSetId }) => {
                             `This data set couldn't be loaded or displayed. Try again, or contact your system administrator.`
                         )}
                     </p>
-                    <RetryButton onClick={fetchDataSet}>
+                    <RetryButton onClick={fetchDataValues}>
                         {i18n.t('Retry loading data set')}
                     </RetryButton>
                 </NoticeBox>
@@ -108,47 +110,92 @@ const Display = ({ dataSetId }) => {
         )
     }
 
-    if (!periodIds.length || !tables.length) {
+    if (!periodIds.length || !dataValues.length) {
         return (
             <div className={styles.noData}>
                 <p>
                     {i18n.t(
-                        `This data set doesn't have any data for {{- period}} in {{- orgUnit}}.`,
+                        `This data set doesn't have any data for {{- period}} in {{- orgUnit}} and {{- categoryOptionCombo}}.`,
                         {
                             period: period.displayName,
                             orgUnit: orgUnit.displayName,
+                            categoryOptionCombo: categoryOptionCombo.displayName
                         }
                     )}
                 </p>
             </div>
         )
     }
-
+    
+    const flatDataValues = () => {
+        const results = [];
+        for( var i=0; i<dataValues.length; i++ ) {
+            const dataValue = dataValues[0];
+            const dataSetElements = selectedDataSet.dataSetElements.filter((item => item.dataElement.id === dataValue.dataElement))
+            if( dataSetElements.length > 0 ) {
+                results.push([dataSetElements[0].dataElement.displayName, dataValue.value])
+            }
+        }
+        
+        return results;
+    }
+    
     if (selectedDataSet.formType === 'CUSTOM') {
         return (
             <div className={styles.display}>
-                {tables.map((table) => (
+                {/* {tables.map((table) => ( */}
                     <TableCustomDataSet
-                        key={table.title}
-                        title={table.title}
-                        columns={table.headers.map((h) => h.name)}
-                        rows={table.rows}
+                        key={`${selectedDataSet.id} - ${categoryOptionCombo.id}`}
+                        title={`${selectedDataSet.displayName} - ${categoryOptionCombo.displayName}`}
+                        columns={[i18n.t("Data Element"), i18n.t("Value")]}
+                        rows={flatDataValues()}
                     />
-                ))}
+                {/* ))} */}
             </div>
         )
+        
+        // return (
+        //     <div className={styles.display}>
+        //         {/* {tables.map((table) => ( */}
+        //             <TableCustomDataSet
+        //                 // key={selectedDataSet.id}
+        //                 dataSet={selectedDataSet}
+        //                 dataValues={tables}
+        //                 categoryOptionCombo={categoryOptionCombo}
+        //                 // title={selectedDataSet.displayName}
+        //                 // columns={selectedDataSet.dataSetElements.map((item) => item.dataElement)}
+        //                 // rows={tables}
+        //             />
+        //         {/* ))} */}
+        //     </div>
+        // )
     }
     return (
         <div className={styles.display}>
-            {tables.map((table) => (
-                <Table
-                    key={table.title}
-                    title={table.title}
-                    columns={table.headers.map((h) => h.name)}
-                    rows={table.rows}
-                />
-            ))}
-        </div>
+        {/* {tables.map((table) => ( */}
+            <Table
+                key={`${selectedDataSet.id} - ${categoryOptionCombo.id}`}
+                title={`${selectedDataSet.displayName} - ${categoryOptionCombo.displayName}`}
+                columns={[i18n.t("Data Element"), i18n.t("Value")]}
+                rows={flatDataValues()}
+            />
+        {/* ))} */}
+    </div>
+    
+        // <div className={styles.display}>
+        //     {/* {tables.map((table) => (
+        //         <Table
+        //             key={table.title}
+        //             title={table.title}
+        //             columns={table.headers.map((h) => h.name)}
+        //             rows={table.rows}
+        //         />
+        //     ))} */}
+        //     <Table
+        //              dataSet={selectedDataSet}
+        //              dataValues={tables}
+        //         />
+        // </div>
     )
 }
 

@@ -7,10 +7,8 @@ import React from 'react'
 import { useAppContext } from '../../app-context/index.js'
 import { readQueryParams } from '../../navigation/read-query-params.js'
 import { useSelectionContext } from '../../selection-context/index.js'
-import { CategoryComboSelect } from '../category-combo-select/category-combo-select.js'
 import { ContextSelect } from '../context-select/context-select.js'
-import { ApprovalStatusesProvider } from './approval-statuses.js'
-import { ORG_UNIT, OrgUnitSelect } from './org-unit-select.js'
+import { CAT_OPTION_COMBO, CategoryComboSelect } from './category-combo-select.js'
 
 jest.mock('../../navigation/read-query-params.js', () => ({
     readQueryParams: jest.fn(),
@@ -56,8 +54,8 @@ beforeEach(() => {
     readQueryParams.mockImplementation(() => ({}))
 })
 
-describe('<OrgUnitSelect>', () => {
-    it('renders an OrganisationUnitTree in a ContextSelect', () => {
+describe('<CategoryComboSelect>', () => {
+    it('renders a CategoryComboSelect in a ContextSelect', () => {
         useSelectionContext.mockImplementation(() => ({
             workflow: {},
             period: {},
@@ -67,57 +65,90 @@ describe('<OrgUnitSelect>', () => {
             selectWorkflow: () => {},
             setOpenedSelect: () => {},
         }))
-        const wrapper = shallow(<OrgUnitSelect />)
+        const wrapper = shallow(<CategoryComboSelect />)
         expect(wrapper.type()).toBe(ContextSelect)
-        expect(wrapper.find(OrganisationUnitTree)).toHaveLength(1)
     })
-
-    it('is enabled if workflow and period have been set', () => {
+    
+    it('is enabled if workflow, period and orgUnit have been set', () => {
         useSelectionContext.mockImplementation(() => ({
             workflow: mockWorkflows[0],
             period: {
                 id: '20120402',
             },
-            orgUnit: {},
+            orgUnit: mockOrgUnitRoots,
             categoryOptionCombo: {},
             openedSelect: '',
             selectWorkflow: () => {},
             setOpenedSelect: () => {},
         }))
-        const wrapper = shallow(<OrgUnitSelect />)
+        const wrapper = shallow(<CategoryComboSelect />)
 
         expect(wrapper.find(ContextSelect).prop('disabled')).toBe(false)
     })
 
-    it('is disabled if workflow and period have not been set yet', () => {
+    it('is disabled if a workflow, period and orgUnit has not been set', () => {
         useSelectionContext.mockImplementation(() => ({
             workflow: {},
             period: {},
             orgUnit: {},
             categoryOptionCombo: {},
             openedSelect: '',
-            selectWorkflow: () => {},
+            selectPeriod: () => {},
             setOpenedSelect: () => {},
         }))
-        const wrapper = shallow(<OrgUnitSelect />)
+        const wrapper = shallow(<CategoryComboSelect />)
+
+        expect(wrapper.find(ContextSelect).prop('disabled')).toBe(true)
+    })
+    
+    it('is disabled if a period and an orgUnit have not been set', () => {
+        useSelectionContext.mockImplementation(() => ({
+            workflow: mockWorkflows[0],
+            period: {},
+            orgUnit: {},
+            categoryOptionCombo: {},
+            openedSelect: '',
+            selectPeriod: () => {},
+            setOpenedSelect: () => {},
+        }))
+        const wrapper = shallow(<CategoryComboSelect />)
+
+        expect(wrapper.find(ContextSelect).prop('disabled')).toBe(true)
+    })
+    
+    it('is disabled if an orgUnit have not been set', () => {
+        useSelectionContext.mockImplementation(() => ({
+            workflow: mockWorkflows[0],
+            period: {
+                id: '201204',
+                displayName: 'April 2012',
+            },
+            orgUnit: {},
+            categoryOptionCombo: {},
+            openedSelect: '',
+            selectPeriod: () => {},
+            setOpenedSelect: () => {},
+        }))
+        const wrapper = shallow(<CategoryComboSelect />)
 
         expect(wrapper.find(ContextSelect).prop('disabled')).toBe(true)
     })
 
-    it('renders a placeholder text when enabled but no organisation unit is selected', () => {
+
+    it('renders a placeholder text when enabled but no category option combo is selected', () => {
         useSelectionContext.mockImplementation(() => ({
             workflow: mockWorkflows[0],
             period: {
                 id: '20120402',
             },
-            orgUnit: {},
+            orgUnit: mockOrgUnitRoots,
             categoryOptionCombo: {},
             openedSelect: '',
             selectWorkflow: () => {},
             setOpenedSelect: () => {},
         }))
-        const wrapper = shallow(<OrgUnitSelect />)
-        const placeholder = 'Choose an organisation unit'
+        const wrapper = shallow(<CategoryComboSelect />)
+        const placeholder = 'Choose a category option combo'
 
         expect(wrapper.find(ContextSelect).prop('disabled')).toBe(false)
         expect(wrapper.find(ContextSelect).prop('value')).toBe(undefined)
@@ -129,7 +160,7 @@ describe('<OrgUnitSelect>', () => {
         ).toBe(true)
     })
 
-    it('does not render placeholder text when disabled and no organisation unit is selected', () => {
+    it('does not render placeholder text when disabled and no category option combo is selected', () => {
         useSelectionContext.mockImplementation(() => ({
             workflow: {},
             period: {},
@@ -139,8 +170,8 @@ describe('<OrgUnitSelect>', () => {
             selectWorkflow: () => {},
             setOpenedSelect: () => {},
         }))
-        const wrapper = shallow(<OrgUnitSelect />)
-        const placeholder = 'Choose an organisation unit'
+        const wrapper = shallow(<CategoryComboSelect />)
+        const placeholder = 'Choose a category option combo'
 
         expect(wrapper.find(ContextSelect).prop('disabled')).toBe(true)
         expect(wrapper.find(ContextSelect).prop('value')).toBe(undefined)
@@ -152,7 +183,7 @@ describe('<OrgUnitSelect>', () => {
         ).toBe(false)
     })
 
-    it('renders the value when a organisation unit is selected', () => {
+    it('renders the value when a category option combo is selected', () => {
         useSelectionContext.mockImplementation(() => ({
             workflow: {
                 id: 'i5m0JPw4DQi',
@@ -160,23 +191,21 @@ describe('<OrgUnitSelect>', () => {
             period: {
                 id: '20120402',
             },
-            orgUnit: {
-                path: '/ImspTQPwCqd',
-                displayName: 'test',
-            },
+            orgUnit: mockOrgUnitRoots,
             categoryOptionCombo: {
-                id: "wertyuiopas"
+                id: "wertyuiopas",
+                displayName: "test"
             },
             openedSelect: '',
             selectWorkflow: () => {},
             setOpenedSelect: () => {},
         }))
-        const wrapper = shallow(<OrgUnitSelect />)
+        const wrapper = shallow(<CategoryComboSelect />)
 
         expect(wrapper.find(ContextSelect).prop('value')).toBe('test')
     })
 
-    it('opens the ContextSelect when the opened select matches "ORG_UNIT"', () => {
+    it('opens the ContextSelect when the opened select matches "CAT_OPTION_COMBO"', () => {
         useSelectionContext.mockImplementation(() => ({
             workflow: {
                 id: 'i5m0JPw4DQi',
@@ -184,13 +213,13 @@ describe('<OrgUnitSelect>', () => {
             period: {
                 id: '20120402',
             },
-            orgUnit: {},
+            orgUnit: mockOrgUnitRoots,
             categoryOptionCombo: {},
-            openedSelect: ORG_UNIT,
+            openedSelect: CAT_OPTION_COMBO,
             selectWorkflow: () => {},
             setOpenedSelect: () => {},
         }))
-        const wrapper = shallow(<OrgUnitSelect />)
+        const wrapper = shallow(<CategoryComboSelect />)
 
         expect(wrapper.find(ContextSelect).prop('open')).toBe(true)
     })
@@ -204,64 +233,21 @@ describe('<OrgUnitSelect>', () => {
             period: {
                 id: '20120402',
             },
-            orgUnit: {},
+            orgUnit: mockOrgUnitRoots,
             categoryOptionCombo: {},
             openedSelect: '',
             selectWorkflow: () => {},
             setOpenedSelect,
         }))
 
-        shallow(<OrgUnitSelect />)
+        shallow(<CategoryComboSelect />)
             .find(ContextSelect)
             .dive()
             .find('button')
             .simulate('click')
 
         expect(setOpenedSelect).toHaveBeenCalledTimes(1)
-        expect(setOpenedSelect).toHaveBeenCalledWith(ORG_UNIT)
-    })
-
-    it('calls selectOrgUnit when clicking a node in the org unit tree', async () => {
-        const selectOrgUnit = jest.fn()
-        useSelectionContext.mockImplementation(() => ({
-            workflow: {
-                id: 'i5m0JPw4DQi',
-            },
-            period: {
-                id: '20120402',
-            },
-            orgUnit: {},
-            categoryOptionCombo: {},
-            openedSelect: ORG_UNIT,
-            selectOrgUnit,
-        }))
-
-        render(
-            <CustomDataProvider
-                data={{
-                    organisationUnits: {
-                        id: 'ImspTQPwCqd',
-                        path: '/ImspTQPwCqd',
-                        displayName: 'Sierra Leone',
-                        children: [],
-                    },
-                }}
-            >
-                <ApprovalStatusesProvider>
-                    <OrgUnitSelect />
-                </ApprovalStatusesProvider>
-            </CustomDataProvider>
-        )
-
-        await waitFor(() => screen.getByText('Sierra Leone'))
-        userEvent.click(screen.getByText('Sierra Leone'))
-
-        expect(selectOrgUnit).toHaveBeenCalledTimes(1)
-        expect(selectOrgUnit).toHaveBeenCalledWith({
-            displayName: 'Sierra Leone',
-            id: 'ImspTQPwCqd',
-            path: '/ImspTQPwCqd',
-        })
+        expect(setOpenedSelect).toHaveBeenCalledWith(CAT_OPTION_COMBO)
     })
 
     it('calls the setOpenedSelect to close when clicking the backdrop', () => {
@@ -273,14 +259,14 @@ describe('<OrgUnitSelect>', () => {
             period: {
                 id: '20120402',
             },
-            orgUnit: {},
+            orgUnit: mockOrgUnitRoots,
             categoryOptionCombo: {},
-            openedSelect: ORG_UNIT,
+            openedSelect: CAT_OPTION_COMBO,
             selectWorkflow: () => {},
             setOpenedSelect,
         }))
 
-        shallow(<OrgUnitSelect />)
+        shallow(<CategoryComboSelect />)
             .find(ContextSelect)
             .dive()
             .find(Popover)
@@ -302,20 +288,22 @@ describe('<OrgUnitSelect>', () => {
             setOpenedSelect: () => {},
         }))
 
-        const wrapper = shallow(<OrgUnitSelect />)
+        const wrapper = shallow(<CategoryComboSelect />)
         const tooltip = wrapper.find(ContextSelect).dive().find(Tooltip)
 
         expect(tooltip.prop('content')).toBe(
-            'Choose a workflow and period first'
+            'Choose a workflow, a period and an organisation unit first'
         )
     })
 
-    it('displays the correct tooltip text when period has not been set yet', () => {
+    it('displays the correct tooltip text when an orgUnit has not been set yet', () => {
         useSelectionContext.mockImplementation(() => ({
             workflow: {
                 id: 'i5m0JPw4DQi',
             },
-            period: {},
+            period: {
+                id: '20120402',
+            },
             orgUnit: {},
             categoryOptionCombo: {},
             openedSelect: '',
@@ -323,9 +311,9 @@ describe('<OrgUnitSelect>', () => {
             setOpenedSelect: () => {},
         }))
 
-        const wrapper = shallow(<OrgUnitSelect />)
+        const wrapper = shallow(<CategoryComboSelect />)
         const tooltip = wrapper.find(ContextSelect).dive().find(Tooltip)
 
-        expect(tooltip.prop('content')).toBe('Choose a period first')
+        expect(tooltip.prop('content')).toBe('Choose an organisation unit first')
     })
 })

@@ -74,6 +74,7 @@ describe('useSelectionContext', () => {
             workflow: expect.any(Object),
             period: expect.any(Object),
             orgUnit: expect.any(Object),
+            categoryOptionCombo: expect.any(Object),
             dataSet: expect.string(),
             openedSelect: expect.any(String),
             clearAll: expect.any(Function),
@@ -81,6 +82,7 @@ describe('useSelectionContext', () => {
             selectWorkflow: expect.any(Function),
             selectPeriod: expect.any(Function),
             selectOrgUnit: expect.any(Function),
+            selectCategoryOptionCombo: expect.any(Function),
             selectDataSet: expect.any(Function),
         })
     })
@@ -112,6 +114,10 @@ describe('useSelectionContext', () => {
             id: 'abc',
             displayName: 'test',
         })
+        expect(result.current.categoryOptionCombo).toEqual({
+            id: 'wertyuiopas',
+        })
+        
     })
 
     describe('functions returned from the hook update the state and url', () => {
@@ -214,6 +220,31 @@ describe('useSelectionContext', () => {
             )
             expect(mock).toHaveBeenCalledTimes(1)
         })
+        
+        
+        it('selectCategoryOptionCombo', () => {
+            const mock = jest.fn()
+            pushStateToHistory.mockImplementation(mock)
+
+            const { result } = renderHook(() => useSelectionContext(), {
+                wrapper,
+            })
+            
+            // Reset count to 0 because the function is also called on initial render
+            mock.mockClear()
+
+            const expectedCategoryOptionCombo = { id: 'wertyuiopas' }
+            act(() => {
+                result.current.selectCategoryOptionCombo(expectedCategoryOptionCombo)
+            })
+            expect(result.current).toEqual(
+                expect.objectContaining({
+                    categoryOptionCombo: expectedCategoryOptionCombo
+                })
+            )
+            expect(mock).toHaveBeenCalledTimes(1)
+        })
+
 
         it('selectDataSet', () => {
             const mock = jest.fn()
@@ -267,6 +298,7 @@ describe('useSelectionContext', () => {
             expect(result.current.workflow).toEqual(null)
             expect(result.current.period).toEqual(null)
             expect(result.current.orgUnit).toEqual(null)
+            expect(result.current.categoryOptionCombo).toEqual(null)
             expect(mock).toHaveBeenCalledTimes(1)
         })
     })

@@ -8,33 +8,49 @@ import { WorkflowContext } from './workflow-context.js'
 
 const query = {
     approvalStatus: {
+        // resource: 'dataApprovals/approvals',
         resource: 'dataApprovals',
-        params: ({ workflow, period, orgUnit }) => ({
+        params: ({ workflow, period, orgUnit, categoryOptionCombo }) => ({
             wf: workflow.id,
             pe: period.id,
             ou: orgUnit.id,
+            aoc: categoryOptionCombo.id
         }),
     },
 }
 
 const WorkflowProvider = ({ children }) => {
-    const { workflow, period, orgUnit } = useSelectionContext()
+    const { workflow, period, orgUnit, categoryOptionCombo } = useSelectionContext();
     const { fetching, error, data, called, refetch } = useDataQuery(query, {
         lazy: true,
-    })
-    const fetchApprovalStatus = () => refetch({ workflow, period, orgUnit })
+    });
+    
+    const fetchApprovalStatus = () => refetch({ workflow, period, orgUnit, categoryOptionCombo });
 
     useEffect(() => {
-        if (workflow && period && orgUnit) {
-            fetchApprovalStatus()
+        if (workflow && period && orgUnit && categoryOptionCombo) {
+            fetchApprovalStatus();
         }
-    }, [workflow, period, orgUnit])
-
+    }, [workflow, period, orgUnit, categoryOptionCombo]);
+    
+    // if(workflow && workflow.dataSets.length === 0) {
+        
+    // }
+    // else if (!workflow || !period || !orgUnit || !categoryOptionCombo) {
     if (!workflow || !period || !orgUnit) {
         return null
     }
 
-    if (fetching || !called) {
+    if( workflow.dataSets.length > 0 &&  !categoryOptionCombo) {
+        return null
+    }
+    // if (!workflow || !period || !orgUnit) {
+    //     if(workflow && workflow.dataSets.length > 0 && !categoryOptionCombo ) {
+    //         return null
+    //     }
+    // }
+    
+    if (categoryOptionCombo && (fetching || !called)) {
         return <Loader />
     }
 
@@ -48,13 +64,13 @@ const WorkflowProvider = ({ children }) => {
             </ErrorMessage>
         )
     }
-
+    
     const {
         state: approvalStatus,
         approvedBy,
         approvedAt,
         ...allowedActions
-    } = data.approvalStatus
+    } = data?.approvalStatus || {}
 
     return (
         <WorkflowContext.Provider
@@ -68,6 +84,10 @@ const WorkflowProvider = ({ children }) => {
                     wf: workflow.id,
                     pe: period.id,
                     ou: orgUnit.id,
+                    aoc: categoryOptionCombo?.id,
+                    // aoc: workflow.dataSets.map(dataset =>
+                    //     dataset.categoryCombo.categoryOptionCombos.map(combo => combo.id)
+                    // ).join(",")
                 },
             }}
         >

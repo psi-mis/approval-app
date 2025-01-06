@@ -1,0 +1,6 @@
+.menuSelect {
+    inline-size: 400px;
+    max-block-size: 70vh;
+    overflow: hidden;
+    overflow-y: auto;
+}

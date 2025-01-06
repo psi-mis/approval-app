@@ -19,7 +19,7 @@ const WorkflowSelect = () => {
     } = useSelectionContext()
     const open = openedSelect === WORKFLOW
     const value = selectedWorkflow?.displayName
-
+    
     return (
         <ContextSelect
             dataTest="workflow-context-select"

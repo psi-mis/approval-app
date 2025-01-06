@@ -1,0 +1,16 @@
+.container {
+    inline-size: 350px;
+    color: #808080;
+}
+
+.inputWrapper {
+    margin: 0px 20px 20px 20px;
+}
+
+.dropdown {
+    margin-top: 20px;
+}
+
+.hideButton {
+    margin: 15px 20px;
+}

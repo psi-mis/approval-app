@@ -11,11 +11,12 @@ import {
 import PropTypes from 'prop-types'
 import React from 'react'
 import { useSelectionContext } from '../../../selection-context/index.js'
+import { getDataSetsInWorkflowByCategoryOptionCombo } from '../../../utils/caterogy-combo-utils.js'
 import styles from './approve-modal.module.css'
 
 const ApproveModal = ({ onApprove, onCancel, error }) => {
-    const { workflow } = useSelectionContext()
-    const { dataSets } = workflow
+    const { workflow, categoryOptionCombo } = useSelectionContext()
+    const dataSets = getDataSetsInWorkflowByCategoryOptionCombo(workflow, categoryOptionCombo)
     const count = dataSets.length
 
     return (

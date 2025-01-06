@@ -80,6 +80,9 @@ describe('<Display>', () => {
             <CustomDataProvider options={{ loadForever: true }}>
                 <SelectionContext.Provider
                     value={{
+                        categoryOptionCombo: {
+                            id: "wertyuiopas",
+                        },
                         orgUnit: {
                             id: 'ou-2',
                             path: '/ou-2',
@@ -117,6 +120,9 @@ describe('<Display>', () => {
             <CustomDataProvider data={data}>
                 <SelectionContext.Provider
                     value={{
+                        categoryOptionCombo: {
+                            id: "wertyuiopas",
+                        },
                         orgUnit: {
                             id: 'ou-2',
                             path: '/ou-2',
@@ -181,6 +187,9 @@ describe('<Display>', () => {
             <CustomDataProvider data={data}>
                 <SelectionContext.Provider
                     value={{
+                        categoryOptionCombo: {
+                            id: "wertyuiopas",
+                        },
                         orgUnit: {
                             id: 'ou-2',
                             path: '/ou-2',
@@ -251,6 +260,9 @@ describe('<Display>', () => {
                 <CustomDataProvider data={data}>
                     <SelectionContext.Provider
                         value={{
+                            categoryOptionCombo: {
+                                id: "wertyuiopas",
+                            },
                             orgUnit: {
                                 id: 'ou-2',
                                 path: '/ou-2',
@@ -333,6 +345,9 @@ describe('<Display>', () => {
                 <CustomDataProvider data={data}>
                     <SelectionContext.Provider
                         value={{
+                            categoryOptionCombo: {
+                                id: "wertyuiopas",
+                            },
                             orgUnit: {
                                 id: 'ou-2',
                                 path: '/ou-2',

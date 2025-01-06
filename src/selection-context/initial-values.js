@@ -3,14 +3,15 @@ import { parsePeriodId } from '../shared/index.js'
 
 export const initialValues = (workflows) => {
     const queryParams = readQueryParams()
-    const { wf, pe, ou, ouDisplayName, dataSet: dataSetParam } = queryParams
+    const { wf, pe, ou, aoc, ouDisplayName, dataSet: dataSetParam } = queryParams
 
     const workflow = initialWorkflowValue(workflows, wf)
     const period = initialPeriodValue(pe, workflow)
     const orgUnit = initialOrgUnitValue(ou, ouDisplayName)
+    const categoryOptionCombo = initialCategoryOptionComboValue(aoc, workflow)
     const dataSet = initialDataSetValue(dataSetParam)
 
-    return { workflow, period, orgUnit, dataSet }
+    return { workflow, period, orgUnit, dataSet, categoryOptionCombo}
 }
 
 export const initialWorkflowValue = (workflows, workflowId) => {
@@ -49,6 +50,23 @@ export const initialOrgUnitValue = (path, displayName) => {
     return { id, path, displayName }
 }
 
+export const initialCategoryOptionComboValue = (aoc, initialWorkflow = {}) => {
+    if (!aoc || !initialWorkflow.id) {
+        return null
+    }
+
+    const dataSets = initialWorkflow?.dataSets
+    for( var i=0; i<dataSets.length; i++ ) {
+        const dataSet = dataSets[i]
+        const categoryOptionCombos = dataSet.categoryCombo.categoryOptionCombos.filter((item => item.id === aoc))
+        if( categoryOptionCombos.length > 0 ) {
+            return categoryOptionCombos[0]
+        }
+    }
+
+    return;
+}
+
 export const initialDataSetValue = (dataSetParam) => {
     if (!dataSetParam) {
         return null
@@ -56,3 +74,17 @@ export const initialDataSetValue = (dataSetParam) => {
 
     return dataSetParam
 }
+
+
+// ===========================
+// Supportive methods
+
+
+// const resolveCategoryOptionIds = (categories, categoryOptions) => {
+//     return categories.map((category) => ({
+//         ...category,
+//         categoryOptions: category.categoryOptions.map(
+//             (id) => categoryOptions[id]
+//         ),
+//     }))
+// }

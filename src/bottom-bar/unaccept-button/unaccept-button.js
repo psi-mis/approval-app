@@ -26,8 +26,8 @@ const UnacceptButton = () => {
             small
             disabled={loading}
             onClick={async () => {
-                const { wf, pe, ou } = params
-                await unacceptData({ wf, pe, ou })
+                const { wf, pe, ou, aoc } = params
+                await unacceptData({ wf, pe, ou, aoc })
                 refresh()
             }}
         >

@@ -20,6 +20,7 @@ describe('pushStateToHistory', () => {
             workflow: { id: '123' },
             period: { id: '455' },
             orgUnit: { path: '789' },
+            categoryOptionCombo: { id: "wertyuiopas" },
         })
 
         expect(mock).toHaveBeenCalledTimes(1)
@@ -36,6 +37,7 @@ describe('pushStateToHistory', () => {
             workflow: {},
             period: {},
             orgUnit: {},
+            categoryOptionCombo: {},
         })
 
         expect(mock).toHaveBeenCalledTimes(0)

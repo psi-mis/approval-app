@@ -8,9 +8,11 @@ const SelectionContext = createContext({
     workflow: {},
     period: {},
     orgUnit: {},
+    categoryOptionCombo: {},
     selectWorkflow: defaultFn,
     selectPeriod: defaultFn,
     selectOrgUnit: defaultFn,
+    selectCategoryOptionCombo: defaultFn,
     clearAll: defaultFn,
     setOpenedSelect: defaultFn,
 })
