@@ -40,16 +40,6 @@ const UnapproveButton = () => {
             small
             disabled={loading}
             onClick={onUnapprove}
-            // onClick={async () => {
-            //     const { wf, pe, ou, aoc } = params
-            //     await unapproveData({ wf:[wf], pe:[pe], approvals: [{"ou": ou, "aoc": aoc}] })
-            //     refresh()
-            // }}
-            // onClick={async () => {
-            //     const { wf, pe, ou } = params
-            //     await unapproveData({ wf, pe, ou })
-            //     refresh()
-            // }}
         >
             {i18n.t('Unapprove')}
         </Button>

@@ -17,7 +17,7 @@ const query = {
     dataValueSets: {
         resource: 'dataValueSets',
         params: ({ periodIds, dataSetId, orgUnit, categoryOptionCombo }) => ({
-            // // arrays are being handled by the app runtime
+            // arrays are being handled by the app runtime
             period: periodIds,
             dataSet: dataSetId,
             orgUnit: orgUnit.id,
