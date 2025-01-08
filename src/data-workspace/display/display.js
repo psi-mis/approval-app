@@ -130,7 +130,7 @@ const Display = ({ dataSetId }) => {
     const flatDataValues = () => {
         const results = [];
         for( var i=0; i<dataValues.length; i++ ) {
-            const dataValue = dataValues[0];
+            const dataValue = dataValues[i];
             const dataSetElements = selectedDataSet.dataSetElements.filter((item => item.dataElement.id === dataValue.dataElement))
             if( dataSetElements.length > 0 ) {
                 results.push([dataSetElements[0].dataElement.displayName, dataValue.value])
@@ -154,48 +154,17 @@ const Display = ({ dataSetId }) => {
             </div>
         )
         
-        // return (
-        //     <div className={styles.display}>
-        //         {/* {tables.map((table) => ( */}
-        //             <TableCustomDataSet
-        //                 // key={selectedDataSet.id}
-        //                 dataSet={selectedDataSet}
-        //                 dataValues={tables}
-        //                 categoryOptionCombo={categoryOptionCombo}
-        //                 // title={selectedDataSet.displayName}
-        //                 // columns={selectedDataSet.dataSetElements.map((item) => item.dataElement)}
-        //                 // rows={tables}
-        //             />
-        //         {/* ))} */}
-        //     </div>
-        // )
     }
     return (
         <div className={styles.display}>
-        {/* {tables.map((table) => ( */}
             <Table
                 key={`${selectedDataSet.id} - ${categoryOptionCombo.id}`}
                 title={`${selectedDataSet.displayName} - ${categoryOptionCombo.displayName}`}
                 columns={[i18n.t("Data Element"), i18n.t("Value")]}
                 rows={flatDataValues()}
             />
-        {/* ))} */}
     </div>
     
-        // <div className={styles.display}>
-        //     {/* {tables.map((table) => (
-        //         <Table
-        //             key={table.title}
-        //             title={table.title}
-        //             columns={table.headers.map((h) => h.name)}
-        //             rows={table.rows}
-        //         />
-        //     ))} */}
-        //     <Table
-        //              dataSet={selectedDataSet}
-        //              dataValues={tables}
-        //         />
-        // </div>
     )
 }
 

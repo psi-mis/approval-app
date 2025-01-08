@@ -42,6 +42,7 @@ const CategoryComboSelect = () => {
             setSelectedCategoryCombo(catCombo)
             if( catCombo.categories.length === 1 ) {
                 selectCategoryOptionCombo(catCombo.categoryOptionCombos[0])
+                isShowed = false
             }
         }
         
