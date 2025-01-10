@@ -69,6 +69,8 @@ const WorkflowProvider = ({ children }) => {
         state: approvalStatus,
         approvedBy,
         approvedAt,
+        acceptedBy,
+        acceptedAt,
         ...allowedActions
     } = data?.approvalStatus || {}
 
@@ -78,6 +80,8 @@ const WorkflowProvider = ({ children }) => {
                 approvalStatus,
                 approvedBy,
                 approvedAt,
+                acceptedBy,
+                acceptedAt,
                 allowedActions,
                 refresh: refetch,
                 params: {
@@ -85,9 +89,6 @@ const WorkflowProvider = ({ children }) => {
                     pe: period.id,
                     ou: orgUnit.id,
                     aoc: categoryOptionCombo?.id,
-                    // aoc: workflow.dataSets.map(dataset =>
-                    //     dataset.categoryCombo.categoryOptionCombos.map(combo => combo.id)
-                    // ).join(",")
                 },
             }}
         >

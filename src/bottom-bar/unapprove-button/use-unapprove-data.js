@@ -6,7 +6,5 @@ export const UNAPPROVE_DATA_MUTATION = {
     data: ({ wf, pe, approvals }) => ({ wf, pe, approvals }),
 }
 
-// export const useUnapproveData = () => useDataMutation(UNAPPROVE_DATA_MUTATION)
-
 export const useUnapproveData = ({ onComplete, onError }) =>
     useDataMutation(UNAPPROVE_DATA_MUTATION, { onComplete, onError })

@@ -53,9 +53,10 @@
         "query-string": "^7.0.1",
         "use-debounce": "^7.0.0"
     },
-    "resolutions": {
-        "@dhis2/ui": "^9.2.0",
-        "@dhis2/app-runtime": "^3.10.2",
-        "@dhis2/d2-i18n": "1.1.3"
-    }
+    "resolutions_VCBAMSDBCJASDHAJS": {
+        "@typescript-eslint/eslint-plugin": "5.59.9",
+        "@typescript-eslint/parser": "5.59.9",
+        "stylelint": "15.10.2"
+    },
+    "testEnvironment": "jsdom"
 }
