@@ -31,7 +31,6 @@ const UnapproveButton = () => {
         
         const unapprovals = [{"ou": ou, "aoc": aoc}]
         unapproveData({ wf:[wf], pe:[pe], approvals: unapprovals })
-        // refresh()
     }
 
     return (
