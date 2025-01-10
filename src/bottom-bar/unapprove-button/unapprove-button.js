@@ -6,7 +6,7 @@ import { useWorkflowContext } from '../../workflow-context/index.js'
 import { useUnapproveData } from './use-unapprove-data.js'
 
 const UnapproveButton = () => {
-     const [unapproveData, { loading, error }] = useUnapproveData({
+    const [unapproveData, { loading, error }] = useUnapproveData({
             onComplete: () => {
                 refresh()
             },
