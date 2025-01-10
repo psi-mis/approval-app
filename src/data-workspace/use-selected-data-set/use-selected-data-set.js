@@ -1,13 +1,13 @@
 import { useMemo } from 'react'
 import { useSelectionContext } from '../../selection-context/index.js'
-import { getDataSetsInWorkflowByCategoryOptionCombo } from '../../utils/caterogy-combo-utils.js'
+import { getDataSetsInWorkflowByAttributeOptionCombo } from '../../utils/caterogy-combo-utils.js'
 
 export const useSelectedDataSet = () => {
-    const { workflow, dataSet, categoryOptionCombo} = useSelectionContext()
-    const availableDataSets = getDataSetsInWorkflowByCategoryOptionCombo(workflow, categoryOptionCombo)
+    const { workflow, dataSet, attributeOptionCombo} = useSelectionContext()
+    const availableDataSets = getDataSetsInWorkflowByAttributeOptionCombo(workflow, attributeOptionCombo)
     
     return useMemo(() => {
-        const dataSets = (!categoryOptionCombo) ? workflow?.dataSets : availableDataSets
+        const dataSets = (!attributeOptionCombo) ? workflow?.dataSets : availableDataSets
         
         if (dataSets.length === 1) {
             return dataSets[0].id

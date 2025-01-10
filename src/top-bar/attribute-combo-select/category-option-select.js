@@ -7,7 +7,7 @@ import {
 } from '@dhis2/ui'
 import PropTypes from 'prop-types'
 import React, { useState, useEffect } from 'react'
-import { areListsEqual } from '../../utils/array-utils.js'
+import { areListsEqual, cloneJSON } from '../../utils/array-utils.js'
 import css from './category-option-select.module.css'
 import MenuSelect from './menu-select.js';
 // import { useSelectionContext } from '../../selection-context/use-selection-context.js'
@@ -16,7 +16,7 @@ import MenuSelect from './menu-select.js';
  * 
  * @param categoryCombo An object which has an array of category objects (JSON), each options (to be rendered in a menu).
  * @param orgUnit An object
- * @param selected An Object of categoryOptionCombo
+ * @param selected {<categoryId_1>: <catOptionId_1>, <categoryId_2>: <catOptionId_2>, ...}
  * @param onChange A function to handle changes in the selected options.
  * @param onClose A function to close the menu.
  * 
@@ -56,8 +56,8 @@ export default function CategoyOptionSelect({
     }, [])
     
     const categoryItemOnChange = (categoryId, selectedOptionId) => {
-        let updatedSelected = {}
-        if( selected ) {
+        let updatedSelected = cloneJSON(selectedItem)
+        if( selectedItem ) {
             updatedSelected[categoryId] = selectedOptionId
         }
         else {

@@ -14,10 +14,10 @@ const CAT_OPTION_COMBO = 'CAT_OPTION_COMBO';
 
 const AttributeComboSelect = () => {
     const { metadata } = useAppContext()
-    const { workflow, orgUnit, period, openedSelect, setOpenedSelect, categoryOptionCombo, selectCategoryOptionCombo } = useSelectionContext();
+    const { workflow, orgUnit, period, openedSelect, setOpenedSelect, attributeOptionCombo, selectAttributeOptionCombo } = useSelectionContext();
         
     const open = openedSelect === CAT_OPTION_COMBO
-    const value = categoryOptionCombo?.displayName
+    const value = attributeOptionCombo?.displayName
     const [categoryCombos, setCategoryCombos] = useState([])
     const [selectedCategoryCombo, setSelectedCategoryCombo] = useState(undefined)
     const [showed, setShowed] = useState(true)
@@ -28,8 +28,8 @@ const AttributeComboSelect = () => {
         setCategoryCombos(categoryComboList)
         
         // Init Catecombo selected if any
-        if( categoryOptionCombo ) {
-            const initCatCombo = getCategoryComboByCategoryOptionCombo(metadata, categoryOptionCombo.id)
+        if( attributeOptionCombo ) {
+            const initCatCombo = getCategoryComboByCategoryOptionCombo(metadata, attributeOptionCombo.id)
             setSelectedCategoryCombo( initCatCombo )
         }
         
@@ -41,7 +41,7 @@ const AttributeComboSelect = () => {
             const catCombo = categoryComboList[0]
             setSelectedCategoryCombo(catCombo)
             if( catCombo.categories.length === 1 ) {
-                selectCategoryOptionCombo(catCombo.categoryOptionCombos[0])
+                selectAttributeOptionCombo(catCombo.categoryOptionCombos[0])
                 isShowed = false
             }
         }
@@ -51,14 +51,14 @@ const AttributeComboSelect = () => {
     }, [workflow])
     
     const onChange = (catOptionCombo) => {
-        selectCategoryOptionCombo(catOptionCombo)
+        selectAttributeOptionCombo(catOptionCombo)
     }
     
     const onChangeCatCombo = (catComboId) => {
         const catCombo = findObject(categoryCombos, "id", catComboId)
         setSelectedCategoryCombo(catCombo)
         if( catCombo.isDefault ) {
-            selectCategoryOptionCombo(catCombo.categoryOptionCombos[0])
+            selectAttributeOptionCombo(catCombo.categoryOptionCombos[0])
         }
     }
     
@@ -66,7 +66,7 @@ const AttributeComboSelect = () => {
         <>
             {showed && <ContextSelect
                 dataTest="category-combo-context-select"
-                prefix={i18n.t('Category Option Combo')}
+                prefix={selectedCategoryCombo?.displayName || i18n.t('Category Option Combo')}
                 placeholder={i18n.t('Choose a category option combo')}
                 value={value}
                 open={open}
@@ -77,7 +77,7 @@ const AttributeComboSelect = () => {
                 popoverMaxWidth={400}
             >
                 {/* Renders a SingleSelectField for each category */}
-                <div className={css.menu}>
+                <div className={css.menu} style={{height: categoryCombos.length == 1 ? "250px" : "330px"}}>
                     {/* Only show Category Combo dropdown when there are more than one categoryCombo in the list */}
                     {categoryCombos.length > 1 && <>
                         <SingleSelectField
@@ -101,7 +101,7 @@ const AttributeComboSelect = () => {
                             key={`catCombo_${selectedCategoryCombo.id}`} 
                             categoryCombo={selectedCategoryCombo}
                             orgUnit={orgUnit}
-                            selected={categoryOptionCombo}
+                            selected={attributeOptionCombo}
                             onChange={onChange}
                             onClose={() => setOpenedSelect('')}
                         />}

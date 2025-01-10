@@ -26,7 +26,7 @@ describe('<PeriodMenu>', () => {
             workflow: {},
             period: {},
             orgUnit: {},
-            categoryOptionCombo: {},
+            attributeOptionCombo: {},
         }))
         const wrapper = shallow(<PeriodMenu periodType="Monthly" year={2018} />)
 
@@ -50,7 +50,7 @@ describe('<PeriodMenu>', () => {
                 id: '201804',
             },
             orgUnit: {},
-            categoryOptionCombo: {},
+            attributeOptionCombo: {},
         }))
         const wrapper = shallow(<PeriodMenu periodType="Monthly" year={2018} />)
         const activeMenuItem = wrapper.findWhere(
@@ -74,7 +74,7 @@ describe('<PeriodMenu>', () => {
             workflow: {},
             period: {},
             orgUnit: {},
-            categoryOptionCombo: {},
+            attributeOptionCombo: {},
         }))
         const wrapper = shallow(<PeriodMenu periodType="Monthly" year={2018} />)
 
@@ -102,7 +102,7 @@ describe('<PeriodMenu>', () => {
                 workflow: {},
                 period: {},
                 orgUnit: {},
-                categoryOptionCombo: {},
+                attributeOptionCombo: {},
             }))
             const wrapper = shallow(
                 <PeriodMenu periodType="Daily" year={2018} />
@@ -130,7 +130,7 @@ describe('<PeriodMenu>', () => {
                 workflow: {},
                 period: {},
                 orgUnit: {},
-                categoryOptionCombo: {},
+                attributeOptionCombo: {},
             }))
             const wrapper = shallow(
                 <PeriodMenu periodType="Daily" year={2018} />

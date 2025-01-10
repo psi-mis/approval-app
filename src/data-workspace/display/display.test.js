@@ -80,7 +80,7 @@ describe('<Display>', () => {
             <CustomDataProvider options={{ loadForever: true }}>
                 <SelectionContext.Provider
                     value={{
-                        categoryOptionCombo: {
+                        attributeOptionCombo: {
                             id: "wertyuiopas",
                         },
                         orgUnit: {
@@ -120,7 +120,7 @@ describe('<Display>', () => {
             <CustomDataProvider data={data}>
                 <SelectionContext.Provider
                     value={{
-                        categoryOptionCombo: {
+                        attributeOptionCombo: {
                             id: "wertyuiopas",
                         },
                         orgUnit: {
@@ -187,7 +187,7 @@ describe('<Display>', () => {
             <CustomDataProvider data={data}>
                 <SelectionContext.Provider
                     value={{
-                        categoryOptionCombo: {
+                        attributeOptionCombo: {
                             id: "wertyuiopas",
                         },
                         orgUnit: {
@@ -260,7 +260,7 @@ describe('<Display>', () => {
                 <CustomDataProvider data={data}>
                     <SelectionContext.Provider
                         value={{
-                            categoryOptionCombo: {
+                            attributeOptionCombo: {
                                 id: "wertyuiopas",
                             },
                             orgUnit: {
@@ -345,7 +345,7 @@ describe('<Display>', () => {
                 <CustomDataProvider data={data}>
                     <SelectionContext.Provider
                         value={{
-                            categoryOptionCombo: {
+                            attributeOptionCombo: {
                                 id: "wertyuiopas",
                             },
                             orgUnit: {

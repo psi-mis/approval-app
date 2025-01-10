@@ -45,13 +45,13 @@ describe('useWorkflowContext', () => {
         displayName: 'Org unit 456',
     }
     
-    const categoryOptionCombo = { id: "wertyuiopas" }
+    const attributeOptionCombo = { id: "wertyuiopas" }
 
     useSelectionContext.mockImplementation(() => ({
         workflow,
         period,
         orgUnit,
-        categoryOptionCombo,
+        attributeOptionCombo,
     }))
 
     it('combines data from various hooks', () => {

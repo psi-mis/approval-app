@@ -10,47 +10,47 @@ const query = {
     approvalStatus: {
         // resource: 'dataApprovals/approvals',
         resource: 'dataApprovals',
-        params: ({ workflow, period, orgUnit, categoryOptionCombo }) => ({
+        params: ({ workflow, period, orgUnit, attributeOptionCombo }) => ({
             wf: workflow.id,
             pe: period.id,
             ou: orgUnit.id,
-            aoc: categoryOptionCombo.id
+            aoc: attributeOptionCombo.id
         }),
     },
 }
 
 const WorkflowProvider = ({ children }) => {
-    const { workflow, period, orgUnit, categoryOptionCombo } = useSelectionContext();
+    const { workflow, period, orgUnit, attributeOptionCombo } = useSelectionContext();
     const { fetching, error, data, called, refetch } = useDataQuery(query, {
         lazy: true,
     });
     
-    const fetchApprovalStatus = () => refetch({ workflow, period, orgUnit, categoryOptionCombo });
+    const fetchApprovalStatus = () => refetch({ workflow, period, orgUnit, attributeOptionCombo });
 
     useEffect(() => {
-        if (workflow && period && orgUnit && categoryOptionCombo) {
+        if (workflow && period && orgUnit && attributeOptionCombo) {
             fetchApprovalStatus();
         }
-    }, [workflow, period, orgUnit, categoryOptionCombo]);
+    }, [workflow, period, orgUnit, attributeOptionCombo]);
     
     // if(workflow && workflow.dataSets.length === 0) {
         
     // }
-    // else if (!workflow || !period || !orgUnit || !categoryOptionCombo) {
+    // else if (!workflow || !period || !orgUnit || !attributeOptionCombo) {
     if (!workflow || !period || !orgUnit) {
         return null
     }
 
-    if( workflow.dataSets.length > 0 &&  !categoryOptionCombo) {
+    if( workflow.dataSets.length > 0 &&  !attributeOptionCombo) {
         return null
     }
     // if (!workflow || !period || !orgUnit) {
-    //     if(workflow && workflow.dataSets.length > 0 && !categoryOptionCombo ) {
+    //     if(workflow && workflow.dataSets.length > 0 && !attributeOptionCombo ) {
     //         return null
     //     }
     // }
     
-    if (categoryOptionCombo && (fetching || !called)) {
+    if (attributeOptionCombo && (fetching || !called)) {
         return <Loader />
     }
 
@@ -88,7 +88,7 @@ const WorkflowProvider = ({ children }) => {
                     wf: workflow.id,
                     pe: period.id,
                     ou: orgUnit.id,
-                    aoc: categoryOptionCombo?.id,
+                    aoc: attributeOptionCombo?.id,
                 },
             }}
         >

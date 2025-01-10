@@ -8,7 +8,7 @@ import {
     getFixedPeriodsForTypeAndDateRange,
     RetryButton,
 } from '../../shared/index.js'
-import { getDataSetsInWorkflowByCategoryOptionCombo } from '../../utils/caterogy-combo-utils.js'
+import { getDataSetsInWorkflowByAttributeOptionCombo } from '../../utils/caterogy-combo-utils.js'
 import styles from './display.module.css'
 import { TableCustomDataSet } from './table-custom-data-set.js'
 import { Table } from './table.js'
@@ -16,20 +16,20 @@ import { Table } from './table.js'
 const query = {
     dataValueSets: {
         resource: 'dataValueSets',
-        params: ({ periodIds, dataSetId, orgUnit, categoryOptionCombo }) => ({
+        params: ({ periodIds, dataSetId, orgUnit, attributeOptionCombo }) => ({
             // arrays are being handled by the app runtime
             period: periodIds,
             dataSet: dataSetId,
             orgUnit: orgUnit.id,
-            attributeOptionCombo: categoryOptionCombo.id
+            attributeOptionCombo: attributeOptionCombo.id
         }),
     },
 }
 
 const Display = ({ dataSetId }) => {
     const selection = useSelectionContext()
-    const { orgUnit, workflow, period, categoryOptionCombo } = selection
-    const dataSets = getDataSetsInWorkflowByCategoryOptionCombo(workflow, categoryOptionCombo)
+    const { orgUnit, workflow, period, attributeOptionCombo } = selection
+    const dataSets = getDataSetsInWorkflowByAttributeOptionCombo(workflow, attributeOptionCombo)
     const selectedDataSet = dataSets.find(({ id }) => id === dataSetId)
     const periodIds = selectedDataSet
         ? getFixedPeriodsForTypeAndDateRange(
@@ -43,7 +43,7 @@ const Display = ({ dataSetId }) => {
         lazy: true,
     })
     const dataValues = data?.dataValueSets.dataValues;
-    const fetchDataValues = () => refetch({periodIds, dataSetId, orgUnit, categoryOptionCombo})
+    const fetchDataValues = () => refetch({periodIds, dataSetId, orgUnit, attributeOptionCombo})
 
     useEffect(
         () => {
@@ -52,7 +52,7 @@ const Display = ({ dataSetId }) => {
             }
         },
         // joining so this produces a primitive value
-        [periodIds.join(','), dataSetId]
+        [periodIds.join(','), dataSetId, attributeOptionCombo, orgUnit]
     )
     
     if (!dataSets || dataSets.length === 0) {
@@ -115,11 +115,11 @@ const Display = ({ dataSetId }) => {
             <div className={styles.noData}>
                 <p>
                     {i18n.t(
-                        `This data set doesn't have any data for {{- period}} in {{- orgUnit}} and {{- categoryOptionCombo}}.`,
+                        `This data set doesn't have any data for {{- period}} in {{- orgUnit}} and {{- attributeOptionCombo}}.`,
                         {
                             period: period.displayName,
                             orgUnit: orgUnit.displayName,
-                            categoryOptionCombo: categoryOptionCombo.displayName
+                            attributeOptionCombo: attributeOptionCombo.displayName
                         }
                     )}
                 </p>
@@ -145,8 +145,8 @@ const Display = ({ dataSetId }) => {
             <div className={styles.display}>
                 {/* {tables.map((table) => ( */}
                     <TableCustomDataSet
-                        key={`${selectedDataSet.id} - ${categoryOptionCombo.id}`}
-                        title={`${selectedDataSet.displayName} - ${categoryOptionCombo.displayName}`}
+                        key={`${selectedDataSet.id} - ${attributeOptionCombo.id}`}
+                        title={`${selectedDataSet.displayName} - ${attributeOptionCombo.displayName}`}
                         columns={[i18n.t("Data Element"), i18n.t("Value")]}
                         rows={flatDataValues()}
                     />
@@ -158,8 +158,8 @@ const Display = ({ dataSetId }) => {
     return (
         <div className={styles.display}>
             <Table
-                key={`${selectedDataSet.id} - ${categoryOptionCombo.id}`}
-                title={`${selectedDataSet.displayName} - ${categoryOptionCombo.displayName}`}
+                key={`${selectedDataSet.id} - ${attributeOptionCombo.id}`}
+                title={`${selectedDataSet.displayName} - ${attributeOptionCombo.displayName}`}
                 columns={[i18n.t("Data Element"), i18n.t("Value")]}
                 rows={flatDataValues()}
             />

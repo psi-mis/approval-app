@@ -74,7 +74,7 @@ describe('useSelectionContext', () => {
             workflow: expect.any(Object),
             period: expect.any(Object),
             orgUnit: expect.any(Object),
-            categoryOptionCombo: expect.any(Object),
+            attributeOptionCombo: expect.any(Object),
             dataSet: expect.string(),
             openedSelect: expect.any(String),
             clearAll: expect.any(Function),
@@ -82,7 +82,7 @@ describe('useSelectionContext', () => {
             selectWorkflow: expect.any(Function),
             selectPeriod: expect.any(Function),
             selectOrgUnit: expect.any(Function),
-            selectCategoryOptionCombo: expect.any(Function),
+            selectAttributeOptionCombo: expect.any(Function),
             selectDataSet: expect.any(Function),
         })
     })
@@ -114,7 +114,7 @@ describe('useSelectionContext', () => {
             id: 'abc',
             displayName: 'test',
         })
-        expect(result.current.categoryOptionCombo).toEqual({
+        expect(result.current.attributeOptionCombo).toEqual({
             id: 'wertyuiopas',
         })
         
@@ -222,7 +222,7 @@ describe('useSelectionContext', () => {
         })
         
         
-        it('selectCategoryOptionCombo', () => {
+        it('selectAttributeOptionCombo', () => {
             const mock = jest.fn()
             pushStateToHistory.mockImplementation(mock)
 
@@ -233,13 +233,13 @@ describe('useSelectionContext', () => {
             // Reset count to 0 because the function is also called on initial render
             mock.mockClear()
 
-            const expectedCategoryOptionCombo = { id: 'wertyuiopas' }
+            const expectedAttributeOptionCombo = { id: 'wertyuiopas' }
             act(() => {
-                result.current.selectCategoryOptionCombo(expectedCategoryOptionCombo)
+                result.current.selectAttributeOptionCombo(expectedAttributeOptionCombo)
             })
             expect(result.current).toEqual(
                 expect.objectContaining({
-                    categoryOptionCombo: expectedCategoryOptionCombo
+                    attributeOptionCombo: expectedAttributeOptionCombo
                 })
             )
             expect(mock).toHaveBeenCalledTimes(1)
@@ -298,7 +298,7 @@ describe('useSelectionContext', () => {
             expect(result.current.workflow).toEqual(null)
             expect(result.current.period).toEqual(null)
             expect(result.current.orgUnit).toEqual(null)
-            expect(result.current.categoryOptionCombo).toEqual(null)
+            expect(result.current.attributeOptionCombo).toEqual(null)
             expect(mock).toHaveBeenCalledTimes(1)
         })
     })

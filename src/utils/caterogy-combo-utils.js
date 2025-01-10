@@ -36,13 +36,13 @@ export const getCategoryComboByCategoryOptionCombo = (metadata, categoryOptionCo
     return
 }
 
-export const getDataSetsInWorkflowByCategoryOptionCombo = (workflow, categoryOptionCombo) => {
+export const getDataSetsInWorkflowByAttributeOptionCombo = (workflow, attributeOptionCombo) => {
     const result = [];
     
-    if( categoryOptionCombo ) {
+    if( attributeOptionCombo ) {
         const dataSets = workflow?.dataSets
         for( const dataSet of dataSets ) {
-            const found = dataSet.categoryCombo.categoryOptionCombos.find((dsCatOptionCombo => dsCatOptionCombo.id === categoryOptionCombo.id))
+            const found = dataSet.categoryCombo.categoryOptionCombos.find((dsCatOptionCombo => dsCatOptionCombo.id === attributeOptionCombo.id))
             if( found ) {
                 result.push(dataSet)
             }

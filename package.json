@@ -53,5 +53,8 @@
         "query-string": "^7.0.1",
         "use-debounce": "^7.0.0"
     },
-    "testEnvironment": "jsdom"
+    "resolutions": {
+        "@dhis2/ui": "^9.2.0",
+        "@dhis2/d2-i18n": "1.1.3"
+    }
 }

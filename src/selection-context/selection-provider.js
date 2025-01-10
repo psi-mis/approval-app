@@ -29,7 +29,7 @@ const reducer = (state, { type, payload }) => {
                 workflow: payload.workflow,
                 period: null,
                 orgUnit: null,
-                categoryOptionCombo: null,
+                attributeOptionCombo: null,
                 dataSet: null,
             }
         case ACTIONS.SELECT_WORKFLOW:
@@ -42,7 +42,7 @@ const reducer = (state, { type, payload }) => {
                     state.workflow?.periodType === payload.workflow?.periodType
                         ? state.period
                         : null,
-                categoryOptionCombo: null,
+                attributeOptionCombo: null,
                 dataSet: null,
             }
         case ACTIONS.SELECT_PERIOD:
@@ -61,13 +61,13 @@ const reducer = (state, { type, payload }) => {
                 ...state,
                 openedSelect: '',
                 orgUnit: payload.orgUnit,
-                categoryOptionCombo: null,
+                attributeOptionCombo: null,
                 dataSet: null,
             }
         case ACTIONS.SELECT_CAT_OPTION_COMBO:
             return {
                 ...state,
-                categoryOptionCombo: payload.categoryOptionCombo,
+                attributeOptionCombo: payload.attributeOptionCombo,
                 dataSet: null,
             }
         case ACTIONS.SELECT_DATA_SET:
@@ -87,7 +87,7 @@ const reducer = (state, { type, payload }) => {
 
 const SelectionProvider = ({ children }) => {
     const { dataApprovalWorkflows } = useAppContext()
-    const [{ openedSelect, workflow, period, orgUnit, dataSet, categoryOptionCombo}, dispatch] =
+    const [{ openedSelect, workflow, period, orgUnit, dataSet, attributeOptionCombo}, dispatch] =
         useReducer(reducer, {
             openedSelect: '',
             ...initialValues(dataApprovalWorkflows),
@@ -97,7 +97,7 @@ const SelectionProvider = ({ children }) => {
         workflow,
         period,
         orgUnit,
-        categoryOptionCombo,
+        attributeOptionCombo,
         openedSelect,
         dataSet,
         clearAll: () =>
@@ -120,15 +120,15 @@ const SelectionProvider = ({ children }) => {
             dispatch({ type: ACTIONS.SELECT_PERIOD, payload: { period } }),
         selectOrgUnit: (orgUnit) =>
             dispatch({ type: ACTIONS.SELECT_ORG_UNIT, payload: { orgUnit } }),
-        selectCategoryOptionCombo: (categoryOptionCombo) =>
-            dispatch({ type: ACTIONS.SELECT_CAT_OPTION_COMBO, payload: { categoryOptionCombo } }),
+        selectAttributeOptionCombo: (attributeOptionCombo) =>
+            dispatch({ type: ACTIONS.SELECT_CAT_OPTION_COMBO, payload: { attributeOptionCombo } }),
         selectDataSet: (dataSet) =>
             dispatch({ type: ACTIONS.SELECT_DATA_SET, payload: { dataSet } }),
     }
 
     useEffect(() => {
-        pushStateToHistory({ workflow, period, orgUnit, categoryOptionCombo, dataSet })
-    }, [workflow, period, orgUnit, categoryOptionCombo, dataSet])
+        pushStateToHistory({ workflow, period, orgUnit, attributeOptionCombo, dataSet })
+    }, [workflow, period, orgUnit, attributeOptionCombo, dataSet])
 
     useEffect(() => {
         const setStateFromQueryParams = () => {

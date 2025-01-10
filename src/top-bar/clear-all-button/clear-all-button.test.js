@@ -23,7 +23,7 @@ describe('<ClearAllButton>', () => {
             orgUnit: {
                 path: 'abc',
             },
-            categoryOptionCombo: {
+            attributeOptionCombo: {
                 id: 'wertyuiopas',
             },
         }))
@@ -45,7 +45,7 @@ describe('<ClearAllButton>', () => {
             orgUnit: {
                 path: 'abc',
             },
-            categoryOptionCombo: null,
+            attributeOptionCombo: null,
         }))
         const wrapper = shallow(<ClearAllButton />)
         const button = wrapper.dive().find({
@@ -63,7 +63,7 @@ describe('<ClearAllButton>', () => {
                 id: '20110203',
             },
             orgUnit: {},
-            categoryOptionCombo: {},
+            attributeOptionCombo: {},
         }))
         const wrapper = shallow(<ClearAllButton />)
         const button = wrapper.dive().find({
@@ -79,7 +79,7 @@ describe('<ClearAllButton>', () => {
             },
             period: {},
             orgUnit: {},
-            categoryOptionCombo: {},
+            attributeOptionCombo: {},
         }))
         const wrapper = shallow(<ClearAllButton />)
         expect(wrapper.type()).toEqual(null)
@@ -90,7 +90,7 @@ describe('<ClearAllButton>', () => {
             workflow: {},
             period: {},
             orgUnit: {},
-            categoryOptionCombo: {},
+            attributeOptionCombo: {},
         }))
         const wrapper = shallow(<ClearAllButton />)
         expect(wrapper.type()).toEqual(null)
@@ -107,7 +107,7 @@ describe('<ClearAllButton>', () => {
                 id: '20110203',
             },
             orgUnit: {},
-            categoryOptionCombo: {},
+            attributeOptionCombo: {},
         }))
 
         shallow(<ClearAllButton />)
