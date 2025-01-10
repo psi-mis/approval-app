@@ -8,10 +8,10 @@ import {
     getFixedPeriodsForTypeAndDateRange,
     RetryButton,
 } from '../../shared/index.js'
+import { getDataSetsInWorkflowByCategoryOptionCombo } from '../../utils/caterogy-combo-utils.js'
 import styles from './display.module.css'
 import { TableCustomDataSet } from './table-custom-data-set.js'
 import { Table } from './table.js'
-import { getDataSetsInWorkflowByCategoryOptionCombo } from '../../utils/caterogy-combo-utils.js'
 
 const query = {
     dataValueSets: {

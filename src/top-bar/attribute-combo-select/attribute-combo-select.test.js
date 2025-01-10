@@ -8,7 +8,7 @@ import { useAppContext } from '../../app-context/index.js'
 import { readQueryParams } from '../../navigation/read-query-params.js'
 import { useSelectionContext } from '../../selection-context/index.js'
 import { ContextSelect } from '../context-select/context-select.js'
-import { CAT_OPTION_COMBO, CategoryComboSelect } from './category-combo-select.js'
+import { CAT_OPTION_COMBO, AttributeComboSelect } from './attribute-combo-select.js'
 
 jest.mock('../../navigation/read-query-params.js', () => ({
     readQueryParams: jest.fn(),
@@ -54,8 +54,8 @@ beforeEach(() => {
     readQueryParams.mockImplementation(() => ({}))
 })
 
-describe('<CategoryComboSelect>', () => {
-    it('renders a CategoryComboSelect in a ContextSelect', () => {
+describe('<AttributeComboSelect>', () => {
+    it('renders a AttributeComboSelect in a ContextSelect', () => {
         useSelectionContext.mockImplementation(() => ({
             workflow: {},
             period: {},
@@ -65,7 +65,7 @@ describe('<CategoryComboSelect>', () => {
             selectWorkflow: () => {},
             setOpenedSelect: () => {},
         }))
-        const wrapper = shallow(<CategoryComboSelect />)
+        const wrapper = shallow(<AttributeComboSelect />)
         expect(wrapper.type()).toBe(ContextSelect)
     })
     
@@ -81,7 +81,7 @@ describe('<CategoryComboSelect>', () => {
             selectWorkflow: () => {},
             setOpenedSelect: () => {},
         }))
-        const wrapper = shallow(<CategoryComboSelect />)
+        const wrapper = shallow(<AttributeComboSelect />)
 
         expect(wrapper.find(ContextSelect).prop('disabled')).toBe(false)
     })
@@ -96,7 +96,7 @@ describe('<CategoryComboSelect>', () => {
             selectPeriod: () => {},
             setOpenedSelect: () => {},
         }))
-        const wrapper = shallow(<CategoryComboSelect />)
+        const wrapper = shallow(<AttributeComboSelect />)
 
         expect(wrapper.find(ContextSelect).prop('disabled')).toBe(true)
     })
@@ -111,7 +111,7 @@ describe('<CategoryComboSelect>', () => {
             selectPeriod: () => {},
             setOpenedSelect: () => {},
         }))
-        const wrapper = shallow(<CategoryComboSelect />)
+        const wrapper = shallow(<AttributeComboSelect />)
 
         expect(wrapper.find(ContextSelect).prop('disabled')).toBe(true)
     })
@@ -129,7 +129,7 @@ describe('<CategoryComboSelect>', () => {
             selectPeriod: () => {},
             setOpenedSelect: () => {},
         }))
-        const wrapper = shallow(<CategoryComboSelect />)
+        const wrapper = shallow(<AttributeComboSelect />)
 
         expect(wrapper.find(ContextSelect).prop('disabled')).toBe(true)
     })
@@ -147,7 +147,7 @@ describe('<CategoryComboSelect>', () => {
             selectWorkflow: () => {},
             setOpenedSelect: () => {},
         }))
-        const wrapper = shallow(<CategoryComboSelect />)
+        const wrapper = shallow(<AttributeComboSelect />)
         const placeholder = 'Choose a category option combo'
 
         expect(wrapper.find(ContextSelect).prop('disabled')).toBe(false)
@@ -170,7 +170,7 @@ describe('<CategoryComboSelect>', () => {
             selectWorkflow: () => {},
             setOpenedSelect: () => {},
         }))
-        const wrapper = shallow(<CategoryComboSelect />)
+        const wrapper = shallow(<AttributeComboSelect />)
         const placeholder = 'Choose a category option combo'
 
         expect(wrapper.find(ContextSelect).prop('disabled')).toBe(true)
@@ -200,7 +200,7 @@ describe('<CategoryComboSelect>', () => {
             selectWorkflow: () => {},
             setOpenedSelect: () => {},
         }))
-        const wrapper = shallow(<CategoryComboSelect />)
+        const wrapper = shallow(<AttributeComboSelect />)
 
         expect(wrapper.find(ContextSelect).prop('value')).toBe('test')
     })
@@ -219,7 +219,7 @@ describe('<CategoryComboSelect>', () => {
             selectWorkflow: () => {},
             setOpenedSelect: () => {},
         }))
-        const wrapper = shallow(<CategoryComboSelect />)
+        const wrapper = shallow(<AttributeComboSelect />)
 
         expect(wrapper.find(ContextSelect).prop('open')).toBe(true)
     })
@@ -240,7 +240,7 @@ describe('<CategoryComboSelect>', () => {
             setOpenedSelect,
         }))
 
-        shallow(<CategoryComboSelect />)
+        shallow(<AttributeComboSelect />)
             .find(ContextSelect)
             .dive()
             .find('button')
@@ -266,7 +266,7 @@ describe('<CategoryComboSelect>', () => {
             setOpenedSelect,
         }))
 
-        shallow(<CategoryComboSelect />)
+        shallow(<AttributeComboSelect />)
             .find(ContextSelect)
             .dive()
             .find(Popover)
@@ -288,7 +288,7 @@ describe('<CategoryComboSelect>', () => {
             setOpenedSelect: () => {},
         }))
 
-        const wrapper = shallow(<CategoryComboSelect />)
+        const wrapper = shallow(<AttributeComboSelect />)
         const tooltip = wrapper.find(ContextSelect).dive().find(Tooltip)
 
         expect(tooltip.prop('content')).toBe(
@@ -311,7 +311,7 @@ describe('<CategoryComboSelect>', () => {
             setOpenedSelect: () => {},
         }))
 
-        const wrapper = shallow(<CategoryComboSelect />)
+        const wrapper = shallow(<AttributeComboSelect />)
         const tooltip = wrapper.find(ContextSelect).dive().find(Tooltip)
 
         expect(tooltip.prop('content')).toBe('Choose an organisation unit first')

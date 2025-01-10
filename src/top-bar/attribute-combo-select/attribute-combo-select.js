@@ -4,15 +4,15 @@ import React, { useEffect, useState } from 'react'
 import { useAppContext } from '../../app-context/use-app-context.js'
 import { useSelectionContext } from '../../selection-context/index.js'
 import { findObject } from '../../utils/array-utils.js'
-import { getCategoryComboByCategoryOptionCombo, getCategoryCombos, getDataSetsInWorkflowByCategoryOptionCombo } from '../../utils/caterogy-combo-utils.js'
+import { getCategoryComboByCategoryOptionCombo, getCategoryCombos } from '../../utils/caterogy-combo-utils.js'
 import { ContextSelect } from '../context-select/context-select.js'
-import css from './category-combo-select.module.css'
-import CategoySelect from './category-select.js'
+import css from './attribute-combo-select.module.css'
+import CategoyOptionSelect from './category-option-select.js'
 
 
 const CAT_OPTION_COMBO = 'CAT_OPTION_COMBO';
 
-const CategoryComboSelect = () => {
+const AttributeComboSelect = () => {
     const { metadata } = useAppContext()
     const { workflow, orgUnit, period, openedSelect, setOpenedSelect, categoryOptionCombo, selectCategoryOptionCombo } = useSelectionContext();
         
@@ -97,7 +97,7 @@ const CategoryComboSelect = () => {
                     </>}
                 
                     {selectedCategoryCombo && (!selectedCategoryCombo.isDefault ) &&
-                        <CategoySelect
+                        <CategoyOptionSelect
                             key={`catCombo_${selectedCategoryCombo.id}`} 
                             categoryCombo={selectedCategoryCombo}
                             orgUnit={orgUnit}
@@ -112,4 +112,4 @@ const CategoryComboSelect = () => {
     )
 }
 
-export { CategoryComboSelect, CAT_OPTION_COMBO }
+export { AttributeComboSelect, CAT_OPTION_COMBO }

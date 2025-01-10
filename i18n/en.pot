@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2025-01-08T05:54:02.527Z\n"
-"PO-Revision-Date: 2025-01-08T05:54:02.527Z\n"
+"POT-Creation-Date: 2025-01-09T09:29:14.584Z\n"
+"PO-Revision-Date: 2025-01-09T09:29:14.584Z\n"
 
 msgid "Not authorized"
 msgstr "Not authorized"
@@ -239,6 +239,15 @@ msgstr "Financial year (Start July)"
 msgid "Financial year (Start April)"
 msgstr "Financial year (Start April)"
 
+msgid "Category Option Combo"
+msgstr "Category Option Combo"
+
+msgid "Choose a category option combo"
+msgstr "Choose a category option combo"
+
+msgid "Choose a combination"
+msgstr "Choose a combination"
+
 msgid "No available options"
 msgstr "No available options"
 
@@ -251,15 +260,6 @@ msgstr ""
 
 msgid "Hide menu"
 msgstr "Hide menu"
-
-msgid "Category Option Combo"
-msgstr "Category Option Combo"
-
-msgid "Choose a category option combo"
-msgstr "Choose a category option combo"
-
-msgid "Choose a combination"
-msgstr "Choose a combination"
 
 msgid "Clear selections"
 msgstr "Clear selections"

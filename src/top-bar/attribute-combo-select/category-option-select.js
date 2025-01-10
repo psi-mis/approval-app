@@ -1,53 +1,72 @@
 import i18n from '@dhis2/d2-i18n'
 import {
     Button,
-    IconChevronDown24,
-    IconChevronUp24,
     NoticeBox,
-    SingleSelect,
+    SingleSelectField,
     SingleSelectOption,
 } from '@dhis2/ui'
 import PropTypes from 'prop-types'
-import React, { useState } from 'react'
-import { areListsEqual, cloneJSON } from '../../utils/array-utils.js'
-import css from './category-combo-menu.module.css'
+import React, { useState, useEffect } from 'react'
+import { areListsEqual } from '../../utils/array-utils.js'
+import css from './category-option-select.module.css'
 import MenuSelect from './menu-select.js';
+// import { useSelectionContext } from '../../selection-context/use-selection-context.js'
 
 /**
  * 
  * @param categoryCombo An object which has an array of category objects (JSON), each options (to be rendered in a menu).
  * @param orgUnit An object
- * @param selected An object mapping category IDs to their selected option IDs. 
- *          Example for an selected:  {
- *                      "category1": "option1",
- *                      "category2": "option2",
- *                      "category3": "option5",
- *                  }
+ * @param selected An Object of categoryOptionCombo
  * @param onChange A function to handle changes in the selected options.
+ * @param onClose A function to close the menu.
  * 
  */
-export default function CategoyComboMenu({
+export default function CategoyOptionSelect({
     categoryCombo,
     orgUnit,
     selected,
     onChange,
+    onClose,
 }) {
-    const [showCategories, setShowCategories] = useState(false);
-    const [selectedItem, setSelectedItem] = useState(selected || {});
+    const [selectedItem, setSelectedItem] = useState({})
+    
+    // Get the selected categories if any
+    const getSelectedCategories = () => {
+        const initCategories = {}
+        
+        if (!selected) {
+            return initCategories
+        }
+        
+        const catOptionIds = selected.categoryOptions.map((item => item.id))
+        // Go through "Categories" of catCombo to find "CategoryOption" we need
+        for( var j=0; j< categoryCombo.categories.length; j++ ) {
+            const category = categoryCombo.categories[j]
+            const foundCatOptions = category.categoryOptions.filter((item => catOptionIds.includes(item.id)))
+            if( foundCatOptions.length > 0 ) {
+                initCategories[category.id] = foundCatOptions[0].id
+            }
+        }
+        
+        return initCategories
+    }
+    
+    useEffect(() => {
+        setSelectedItem(getSelectedCategories())
+    }, [])
     
     const categoryItemOnChange = (categoryId, selectedOptionId) => {
-        const tempSelected = cloneJSON(selectedItem)
-        if( selectedItem[categoryId] ) {
-            delete selectedItem[categoryId]
+        let updatedSelected = {}
+        if( selected ) {
+            updatedSelected[categoryId] = selectedOptionId
         }
-        tempSelected[categoryId] = selectedOptionId
-        setSelectedItem(tempSelected)
+        else {
+            updatedSelected = { ...selectedItem, [categoryId]: selectedOptionId }
+        }
+        setSelectedItem(updatedSelected)
         
-        const catOptionCombo = findCategoryOptionCombo(tempSelected)
-        if( catOptionCombo )
-        {
-            onChange(tempSelected, catOptionCombo)
-        }
+        const selectedCatOptionCombo = findCategoryOptionCombo(updatedSelected)
+        onChange(selectedCatOptionCombo)
     }
     
     const findCategoryOptionCombo = (selectedItem) => {
@@ -61,7 +80,7 @@ export default function CategoyComboMenu({
             }
         }
         
-        return null;
+        return;
     }
     
     // Checks if there's exactly one category in the categories array and that category has at least one categoryOption
@@ -92,23 +111,14 @@ export default function CategoyComboMenu({
         )
     }
 
+    
     return (
         <div className={css.container}>
             <div className={css.inputs}>
-                <div className={css.containerTitle}>
-                    <div className={css.title}>{categoryCombo.displayName}</div>
-                    <Button
-                        small
-                        onClick={() => setShowCategories(!showCategories)}
-                            icon={showCategories ? <IconChevronUp24 /> : <IconChevronDown24 />}
-                        >
-                    </Button>
-                </div>
                 
-                {/* Iterates over the categories array to render inputs for each category. */}
-                {showCategories && categories.map(({ id, displayName, categoryOptions }) => {
-                    // If categoryOptions is empty, displays a NoticeBox with an error message saying no options are available.
-                    return categoryOptions.length === 0 ? (
+                {/* Categories Dropdown */}
+                {categories.map(({ id, displayName, categoryOptions }) => 
+                    categoryOptions.length === 0 ? (
                         <NoticeBox
                             className={css.noOptionsBox}
                             error
@@ -121,8 +131,8 @@ export default function CategoyComboMenu({
                         </NoticeBox>
                     ) : (
                         // Renders a SingleSelectField for each category
-                        <div className={css.input} key={id}>
-                            <SingleSelect
+                        <div className={css.inputWrapper} key={id}>
+                            <SingleSelectField
                                 label={displayName} // The category's displayName.
                                 selected={selectedItem[id]} // Current selected option ID.
                                 onChange={({ selected }) => categoryItemOnChange(id, selected)}
@@ -132,29 +142,36 @@ export default function CategoyComboMenu({
                                         key={id}
                                         value={id}
                                         label={displayName}
+                                        className={css.dropdown}
                                     />
                                 ))}
-                            </SingleSelect>
+                            </SingleSelectField>
                         </div>
                     )
-                })}
+                )}
+               
             </div>
-
-            {/* Hide Menu Button */}
-            {/* <Button
+            
+            <Button
                 secondary
+                className={css.hideButton}
                 onClick={(_, evt) => {
-                    evt.stopPropagation(); // Stops event propagation to avoid conflicts with other click handlers.
-                    close(); // Calls close() to close the menu.
+                    // required as otherwise it'd trigger a `setOpen(true)` call as
+                    // react thinks of this dropdown as being inside of the
+                    // selector. A click on the selector opens the menu.
+                    evt.stopPropagation()
+
+                    onClose()
                 }}
             >
                 {i18n.t('Hide menu')}
-            </Button> */}
+            </Button>
+            
         </div>
     )
 }
 
-CategoyComboMenu.propTypes = {
+CategoyOptionSelect.propTypes = {
     categoryCombo: PropTypes.shape({
         categories: PropTypes.arrayOf(
             PropTypes.shape({
@@ -185,7 +202,8 @@ CategoyComboMenu.propTypes = {
     
     orgUnit: PropTypes.object.isRequired,
     onChange: PropTypes.func.isRequired,
-    selected: PropTypes.objectOf(PropTypes.string)
+    onClose: PropTypes.func.isRequired,
+    selected: PropTypes.object,
 }
 
 
@@ -193,9 +211,8 @@ const getCategoriesWithOptionsWithinOrgUnit = (categoryCombo, orgUnitId) => {
     if (!categoryCombo || !orgUnitId) {
         return []
     }
-    const categories = categoryCombo.categories;
-    // const categoryOptions = categories?.flatMap(category => category.categoryOptions || []);
     
+    const categories = categoryCombo.categories
     const result = (categories || []).map((category) => ({
         ...category,
         categoryOptions: category.categoryOptions.filter(
@@ -207,7 +224,6 @@ const getCategoriesWithOptionsWithinOrgUnit = (categoryCombo, orgUnitId) => {
         ),
     }));
     
-    console.log("getCategoriesWithOptionsWithinPeriodWithOrgUnit", result);
     return result;
 }
 
