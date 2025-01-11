@@ -5,6 +5,10 @@
     overflow-y: auto;
 }
 
+.bordered {
+    border-bottom: 1px solid var(--colors-grey400);
+}
+
 .divider {
     margin-top: 30px !important;
 }

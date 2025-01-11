@@ -1,6 +1,8 @@
 import i18n from '@dhis2/d2-i18n'
 import {
     Button,
+    Menu,
+    MenuItem,
     NoticeBox,
     SingleSelectField,
     SingleSelectOption,
@@ -88,26 +90,20 @@ export default function CategoyOptionSelect({
     if (categories.length === 1 && categories[0].categoryOptions?.length > 0) {
         // Extracts the single category from the categories array
         const category = categories[0]
-        // Maps categoryOptions into a JSON array with value (ID) and label (displayName)
-        const values = category.categoryOptions.map(({ id, displayName }) => ({
-            value: id,
-            label: displayName,
-        }))
-
         // Renders a MenuSelect for the single category
         return (
-            <MenuSelect
-                values={values} // List of options
-                selected={selectedItem[category.id]} // Current selected option for the category.
-                // selected={!selected ? selected[category.id]: ""} // Current selected option for the category.
-                dataTest="data-set-selector-menu" // Identifier for testing purposes
-                onChange={({ selected: categoryOptionId }) => { // Handles when an option is selected
-                    onChange({
-                        categoryId: category.id,
-                        selected: categoryOptionId,
-                    })
-                }}
-            />
+            <Menu className={css.menu}>
+                {category.categoryOptions.map((catOption) => (
+                    <MenuItem
+                        key={`${categoryCombo.id}-${catOption.id}`}
+                        className={css.bordered}
+                        active={selectedItem[category.id] === catOption.id}
+                        onClick={() => categoryItemOnChange(category.id, catOption.id)}
+                        label={<span data-value={catOption.id}>{catOption.displayName}</span>}
+                    />
+                ))}
+            </Menu>
+           
         )
     }
 

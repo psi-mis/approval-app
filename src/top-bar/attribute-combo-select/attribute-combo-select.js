@@ -1,5 +1,5 @@
 import i18n from '@dhis2/d2-i18n'
-import { Divider, SingleSelectField, SingleSelectOption} from '@dhis2/ui'
+import { Divider, SingleSelect, SingleSelectField, SingleSelectOption} from '@dhis2/ui'
 import React, { useEffect, useState } from 'react'
 import { useAppContext } from '../../app-context/use-app-context.js'
 import { useSelectionContext } from '../../selection-context/index.js'
@@ -17,62 +17,85 @@ const AttributeComboSelect = () => {
     const { workflow, orgUnit, period, openedSelect, setOpenedSelect, attributeOptionCombo, selectAttributeOptionCombo } = useSelectionContext();
         
     const open = openedSelect === CAT_OPTION_COMBO
-    // const value = attributeOptionCombo?.displayName
-    const [categoryCombos, setCategoryCombos] = useState([])
-    const [value, setValue] = useState("")
+    const [attributeCombos, setAttributeCombos] = useState([])
+    const [attrComboValue, setAttrComboValue] = useState("")
     const [selectedAttributeCombo, setSelectedAttributeCombo] = useState(null)
     const [showed, setShowed] = useState(true)
     
-    useEffect(() => {
-        // Initilize Category Combo list
-        const categoryComboList = getCategoryCombos(metadata, workflow)
-        setCategoryCombos(categoryComboList)
-        
-        let isShowed = true
-        let attrComboValue = i18n.t('0 selections')
-        
-        // Init Catecombo selected if any
-        if( attributeOptionCombo ) {
-            const initCatCombo = getCategoryComboByCategoryOptionCombo(metadata, attributeOptionCombo.id)
-            /***
-            Convert catOption list from 
-                [{ id: "orbbKVMCHeW" }, { id: "orMsAWGkmbP" }] 
-            to 
-                {0: "orbbKVMCHeW", 1: "orMsAWGkmbP"} 
-            */
-            const catOptions = getCategoryOptionsByCategoryOptionCombo(metadata, attributeOptionCombo.id).reduce((acc, item, index) => {
-                acc[index] = item.id;
+    const processCategoryOptions = (metadata, optionComboId) => {
+        return getCategoryOptionsByCategoryOptionCombo(metadata, optionComboId).reduce(
+            (acc, option, index) => {
+                acc[index] = option.id;
                 return acc;
-              }, {});
-              
-            setSelectedAttributeCombo( initCatCombo )
-            attrComboValue = getAttributeOptionComboValue(initCatCombo, catOptions)
+            },
+            {}
+        );
+    };
+    
+    const initializeSelectedAttributeCombo = (metadata, optionComboId) => {
+        const selectedCatCombo = getCategoryComboByCategoryOptionCombo(metadata, optionComboId);
+        const categoryOptions = processCategoryOptions(metadata, optionComboId);
+    
+        setSelectedAttributeCombo(selectedCatCombo);
+        return getAttributeOptionComboValue(selectedCatCombo, categoryOptions);
+    };
+    
+    const handleSingleCategoryCombo = (_attributeCombos) => {
+        const singleCategoryCombo = _attributeCombos[0];
+        setSelectedAttributeCombo(singleCategoryCombo);
+    
+        if (singleCategoryCombo.categoryOptionCombos.length === 1) {
+            const defaultOptionCombo = singleCategoryCombo.categoryOptionCombos[0];
+            selectAttributeOptionCombo(defaultOptionCombo);
+            return { isVisible: false, value: i18n.t('1 selection') };
         }
-        else if( categoryComboList.length === 1 ) {
-            const catCombo = categoryComboList[0]
-            setSelectedAttributeCombo(catCombo)
-            if( catCombo.categories.length === 1 ) {
-                const categoryOptionCombo = catCombo.categoryOptionCombos[0]
-                selectAttributeOptionCombo(categoryOptionCombo)
-                attrComboValue = i18n.t('1 selection')
-                isShowed = false
-            }
+    
+        return { isVisible: true, value: i18n.t('0 selections') };
+    };
+    
+    const resetAttributeComboState = () => {
+        setSelectedAttributeCombo(null);
+        return { isVisible: false, value: i18n.t('0 selections') };
+    };
+    
+    useEffect(() => {
+        // Fetch and set the category combos
+        const _attributeCombos = getCategoryCombos(metadata, workflow)
+        setAttributeCombos(_attributeCombos)
+        
+        // Reset selected attribute option combo
+        selectAttributeOptionCombo(null)
+    
+        let isShowAttributeComboVisible = true;
+        let attributeComboValue = i18n.t('0 selections');
+        if (_attributeCombos.length === 0) {
+            // Handle the case for no category combos
+            const result = resetAttributeComboState();
+            isShowAttributeComboVisible = result.isVisible;
+            attributeComboValue = result.value;
+        }
+        else if (_attributeCombos.length === 1) {
+            // Handle the case for a single category combo
+            const result = handleSingleCategoryCombo(_attributeCombos);
+            isShowAttributeComboVisible = result.isVisible;
+            attributeComboValue = result.value;
+        }
+        else if (attributeOptionCombo) {
+            // Initialize with the existing attribute option combo
+            attributeComboValue = initializeSelectedAttributeCombo(metadata, attributeOptionCombo.id);
         }
         else {
-            if( categoryComboList.length === 0 ) {
-                isShowed = false
-            }
             setSelectedAttributeCombo(null)
         }
-        
-        // Update state only if values have changed
-        setShowed((prev) => (prev !== isShowed ? isShowed : prev));
-        setValue((prev) => (prev !== attrComboValue ? attrComboValue : prev));
-    }, [workflow])
+    
+        // Update states only if values have changed
+        setShowed((prev) => (prev !== isShowAttributeComboVisible ? isShowAttributeComboVisible : prev));
+        setAttrComboValue((prev) => (prev !== attributeComboValue ? attributeComboValue : prev));
+    }, [workflow]);
     
     const onChange = (selectedAttrCombo, selectedCategoryItems, selectedAttrOptionCombo) => {
         selectAttributeOptionCombo(selectedAttrOptionCombo)
-        setValue(getAttributeOptionComboValue(selectedAttrCombo, selectedCategoryItems))
+        setAttrComboValue(getAttributeOptionComboValue(selectedAttrCombo, selectedCategoryItems))
     }
     
     const getAttributeOptionComboValue = (selectedAttrCombo, selectedCategoryItems) => {
@@ -105,45 +128,52 @@ const AttributeComboSelect = () => {
     }
     
     const onChangeCatCombo = (catComboId) => {
-        const catCombo = findObject(categoryCombos, "id", catComboId)
+        const catCombo = findObject(attributeCombos, "id", catComboId)
+        
+        // Update the selected attribute combo and reset attribute combo value
         setSelectedAttributeCombo(catCombo)
-        setValue(i18n.t('0 selections'))
+        setAttrComboValue(i18n.t('0 selections'))
+        
+        // Automatically select the default option combo if applicable
         if( catCombo.isDefault ) {
             selectAttributeOptionCombo(catCombo.categoryOptionCombos[0])
         }
     }
-    
+console.log("=== select attributeOptionCombo : ", attributeOptionCombo)
+
+console.log("select attributeCombos : ", attributeCombos)
+console.log("select workflow : ", workflow)
     return (
         <>
             {showed && <ContextSelect 
                 dataTest="category-combo-context-select"
                 prefix={selectedAttributeCombo?.displayName || i18n.t('Category Option Combo')}
-                placeholder={value || i18n.t('Choose a category option combo')}
-                value={value}
+                placeholder={attrComboValue || i18n.t('Choose a category option combo')}
                 open={open}
                 disabled={!(workflow?.id && period?.id && orgUnit?.id )}
                 onOpen={() => setOpenedSelect(CAT_OPTION_COMBO)}
                 onClose={() => setOpenedSelect('')}
-                // requiredValuesMessage={requiredValuesMessage}
                 popoverMaxWidth={400}
             >
                 {/* Renders a SingleSelectField for each category */}
-                <div className={css.menu} style={{height: categoryCombos.length == 1 ? "250px" : "330px"}}>
+                <div className={css.menu} style={{height: attributeCombos.length == 1 ? "250px" : "330px"}}>
                     {/* Only show Category Combo dropdown when there are more than one categoryCombo in the list */}
-                    {categoryCombos.length > 1 && <>
-                        <SingleSelectField
+                    {attributeCombos.length > 1 && <>
+                        <SingleSelect
                             placeholder={i18n.t('Choose a combination')}
                             selected={selectedAttributeCombo?.id}
                             onChange={({selected}) => onChangeCatCombo(selected)}
                         >
-                            {categoryCombos.map((catCombo) => (
+                            {attributeCombos.map((catCombo) => (
                                 <SingleSelectOption
                                     key={catCombo.id}
+                                    // attrComboValue={catCombo.id}
                                     value={catCombo.id}
                                     label={catCombo.displayName}
+                                    // onClick={() => onChangeCatCombo(catCombo)}
                                 />
                             ))}
-                        </SingleSelectField>
+                        </SingleSelect>
                         <Divider className={css.divider} />
                     </>}
                 
