@@ -47,12 +47,12 @@ const Display = ({ dataSetId }) => {
 
     useEffect(
         () => {
-            if (periodIds.length && dataSetId) {
+            if (workflow && periodIds.length && dataSetId && attributeOptionCombo && orgUnit) {
                 fetchDataValues();
             }
         },
         // joining so this produces a primitive value
-        [periodIds.join(','), dataSetId, attributeOptionCombo, orgUnit]
+        [workflow, periodIds.join(','), dataSetId, attributeOptionCombo, orgUnit]
     )
     
     if (!dataSets || dataSets.length === 0) {

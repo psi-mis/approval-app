@@ -61,7 +61,6 @@ const reducer = (state, { type, payload }) => {
                 ...state,
                 openedSelect: '',
                 orgUnit: payload.orgUnit,
-                attributeOptionCombo: null,
                 dataSet: null,
             }
         case ACTIONS.SELECT_CAT_OPTION_COMBO:

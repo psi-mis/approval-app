@@ -66,17 +66,17 @@ export default function CategoyOptionSelect({
         setSelectedItem(updatedSelected)
         
         const selectedCatOptionCombo = findCategoryOptionCombo(updatedSelected)
-        onChange(selectedCatOptionCombo)
+        onChange(categoryCombo, updatedSelected, selectedCatOptionCombo )
     }
     
     const findCategoryOptionCombo = (selectedItem) => {
         const selectedCatOptionIds = Object.values(selectedItem)
         const catOptionComboList = categoryCombo.categoryOptionCombos
         for( let i=0; i<catOptionComboList.length; i++ ) {
-            const catOptionCombo = catOptionComboList[i]
-            const catOptionIds = catOptionCombo.categoryOptions.map((item) => item.id)
+            const attributeOptionCombo = catOptionComboList[i]
+            const catOptionIds = attributeOptionCombo.categoryOptions.map((item) => item.id)
             if( areListsEqual(selectedCatOptionIds, catOptionIds) ) {
-                return catOptionCombo;
+                return attributeOptionCombo;
             }
         }
         

@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2025-01-10T15:42:39.312Z\n"
-"PO-Revision-Date: 2025-01-10T15:42:39.312Z\n"
+"POT-Creation-Date: 2025-01-11T03:29:51.751Z\n"
+"PO-Revision-Date: 2025-01-11T03:29:51.751Z\n"
 
 msgid "Not authorized"
 msgstr "Not authorized"
@@ -238,6 +238,15 @@ msgstr "Financial year (Start July)"
 
 msgid "Financial year (Start April)"
 msgstr "Financial year (Start April)"
+
+msgid "0 selections"
+msgstr "0 selections"
+
+msgid "1 selection"
+msgstr "1 selection"
+
+msgid "{{amount}} selections"
+msgstr "{{amount}} selections"
 
 msgid "Category Option Combo"
 msgstr "Category Option Combo"

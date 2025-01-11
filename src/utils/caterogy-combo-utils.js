@@ -27,9 +27,21 @@ export const getCategoryCombos = (metadata, workflow) => {
 export const getCategoryComboByCategoryOptionCombo = (metadata, categoryOptionComboId) => {
     const categoryCombos = metadata.categoryCombos
     for( const categoryCombo of categoryCombos ) {
-        const found = categoryCombo.categoryOptionCombos?.find((item => item.id === categoryOptionComboId))
-        if( found ) {
+        const foundCatOptionCombo = categoryCombo.categoryOptionCombos?.find((item => item.id === categoryOptionComboId))
+        if( foundCatOptionCombo ) {
             return categoryCombo
+        }
+    }
+    
+    return
+}
+
+export const getCategoryOptionsByCategoryOptionCombo = (metadata, categoryOptionComboId) => {
+    const categoryCombos = metadata.categoryCombos
+    for( const categoryCombo of categoryCombos ) {
+        const foundCatOptionCombo = categoryCombo.categoryOptionCombos?.find((item => item.id === categoryOptionComboId))
+        if( foundCatOptionCombo ) {
+            return foundCatOptionCombo.categoryOptions
         }
     }
     
