@@ -139,10 +139,7 @@ const AttributeComboSelect = () => {
             selectAttributeOptionCombo(catCombo.categoryOptionCombos[0])
         }
     }
-console.log("=== select attributeOptionCombo : ", attributeOptionCombo)
-
-console.log("select attributeCombos : ", attributeCombos)
-console.log("select workflow : ", workflow)
+    
     return (
         <>
             {showed && <ContextSelect 
@@ -158,7 +155,7 @@ console.log("select workflow : ", workflow)
                 {/* Renders a SingleSelectField for each category */}
                 <div className={css.menu} style={{height: attributeCombos.length == 1 ? "250px" : "330px"}}>
                     {/* Only show Category Combo dropdown when there are more than one categoryCombo in the list */}
-                    {attributeCombos.length > 1 && <>
+                    {attributeCombos.length > 1 && <div className={css.attributeComboSelect }>
                         <SingleSelect
                             placeholder={i18n.t('Choose a combination')}
                             selected={selectedAttributeCombo?.id}
@@ -167,15 +164,13 @@ console.log("select workflow : ", workflow)
                             {attributeCombos.map((catCombo) => (
                                 <SingleSelectOption
                                     key={catCombo.id}
-                                    // attrComboValue={catCombo.id}
                                     value={catCombo.id}
                                     label={catCombo.displayName}
-                                    // onClick={() => onChangeCatCombo(catCombo)}
                                 />
                             ))}
                         </SingleSelect>
                         <Divider className={css.divider} />
-                    </>}
+                    </div>}
                 
                     {selectedAttributeCombo && (!selectedAttributeCombo.isDefault ) &&
                         <CategoyOptionSelect
