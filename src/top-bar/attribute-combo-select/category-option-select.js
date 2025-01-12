@@ -11,8 +11,6 @@ import PropTypes from 'prop-types'
 import React, { useState, useEffect } from 'react'
 import { areListsEqual, cloneJSON } from '../../utils/array-utils.js'
 import css from './category-option-select.module.css'
-import MenuSelect from './menu-select.js';
-// import { useSelectionContext } from '../../selection-context/use-selection-context.js'
 
 /**
  * 

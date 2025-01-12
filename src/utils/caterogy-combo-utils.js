@@ -36,6 +36,18 @@ export const getCategoryComboByCategoryOptionCombo = (metadata, categoryOptionCo
     return
 }
 
+export const getCategoryOptionComboById = (metadata, categoryOptionComboId) => {
+    const categoryCombos = metadata.categoryCombos
+    for( const categoryCombo of categoryCombos ) {
+        const foundCatOptionCombo = categoryCombo.categoryOptionCombos?.find((item => item.id === categoryOptionComboId))
+        if( foundCatOptionCombo ) {
+            return foundCatOptionCombo
+        }
+    }
+    
+    return
+}
+
 export const getCategoryOptionsByCategoryOptionCombo = (metadata, categoryOptionComboId) => {
     const categoryCombos = metadata.categoryCombos
     for( const categoryCombo of categoryCombos ) {
