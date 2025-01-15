@@ -9,6 +9,7 @@ import {
     RetryButton,
 } from '../../shared/index.js'
 import { getDataSetsInWorkflowByAttributeOptionCombo } from '../../utils/caterogy-combo-utils.js'
+import { transformDataValues } from '../../utils/data-values-utils.js'
 import styles from './display.module.css'
 import { TableCustomDataSet } from './table-custom-data-set.js'
 import { Table } from './table.js'
@@ -128,16 +129,7 @@ const Display = ({ dataSetId }) => {
     }
     
     const flatDataValues = () => {
-        const results = [];
-        for( var i=0; i<dataValues.length; i++ ) {
-            const dataValue = dataValues[i];
-            const dataSetElements = selectedDataSet.dataSetElements.filter((item => item.dataElement.id === dataValue.dataElement))
-            if( dataSetElements.length > 0 ) {
-                results.push([dataSetElements[0].dataElement.displayName, dataValue.value])
-            }
-        }
-        
-        return results;
+        return transformDataValues(selectedDataSet, dataValues)
     }
     
     if (selectedDataSet.formType === 'CUSTOM') {

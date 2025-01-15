@@ -17,6 +17,11 @@ const AttributeComboSelect = () => {
     const { workflow, orgUnit, period, openedSelect, setOpenedSelect, attributeOptionCombo, selectAttributeOptionCombo } = useSelectionContext();
         
     const open = openedSelect === CAT_OPTION_COMBO
+    const getMissingSelectionsMessage = () => {
+        if( !period ) return i18n.t('Choose a period first')
+        if( !orgUnit ) return i18n.t('Choose an organisation unit first')
+    } 
+        
     const [attributeCombos, setAttributeCombos] = useState([])
     const [attrComboValue, setAttrComboValue] = useState("")
     const [selectedAttributeCombo, setSelectedAttributeCombo] = useState(null)
@@ -150,7 +155,7 @@ const AttributeComboSelect = () => {
             selectAttributeOptionCombo(catCombo.categoryOptionCombos[0])
         }
     }
-    console.log("=== attributeOptionCombo: ", attributeOptionCombo)
+    
     return (
         <>
             {showed && <ContextSelect 
@@ -161,6 +166,7 @@ const AttributeComboSelect = () => {
                 disabled={!(workflow?.id && period?.id && orgUnit?.id )}
                 onOpen={() => setOpenedSelect(CAT_OPTION_COMBO)}
                 onClose={() => setOpenedSelect('')}
+                requiredValuesMessage={getMissingSelectionsMessage()}
                 popoverMaxWidth={400}
             >
                 {/* Renders a SingleSelectField for each category */}
@@ -174,7 +180,7 @@ const AttributeComboSelect = () => {
                         >
                             {attributeCombos.map((catCombo) => (
                                 <SingleSelectOption
-                                    key={catCombo.id}
+                                    key={`wf_${workflow.id}_$catCombo.id}`}
                                     value={catCombo.id}
                                     label={catCombo.displayName}
                                 />
@@ -185,7 +191,7 @@ const AttributeComboSelect = () => {
                 
                     {selectedAttributeCombo && (!selectedAttributeCombo.isDefault ) &&
                         <CategoyOptionSelect
-                            key={`catCombo_${selectedAttributeCombo.id}`} 
+                            key={`catCombo_${selectedAttributeCombo?.id}_${orgUnit?.id}`}
                             categoryCombo={selectedAttributeCombo}
                             orgUnit={orgUnit}
                             selected={attributeOptionCombo}

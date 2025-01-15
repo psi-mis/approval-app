@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2025-01-11T05:21:30.669Z\n"
-"PO-Revision-Date: 2025-01-11T05:21:30.669Z\n"
+"POT-Creation-Date: 2025-01-15T03:06:00.063Z\n"
+"PO-Revision-Date: 2025-01-15T03:06:00.063Z\n"
 
 msgid "Not authorized"
 msgstr "Not authorized"
@@ -239,6 +239,12 @@ msgstr "Financial year (Start July)"
 msgid "Financial year (Start April)"
 msgstr "Financial year (Start April)"
 
+msgid "Choose a period first"
+msgstr "Choose a period first"
+
+msgid "Choose an organisation unit first"
+msgstr "Choose an organisation unit first"
+
 msgid "1 selection"
 msgstr "1 selection"
 
@@ -281,9 +287,6 @@ msgstr "Approved"
 
 msgid "Failed to load approval state"
 msgstr "Failed to load approval state"
-
-msgid "Choose a period first"
-msgstr "Choose a period first"
 
 msgid "Choose a workflow and period first"
 msgstr "Choose a workflow and period first"

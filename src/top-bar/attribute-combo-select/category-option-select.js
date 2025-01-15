@@ -55,6 +55,7 @@ export default function CategoyOptionSelect({
         setSelectedItem(getSelectedCategories())
     }, [])
     
+    
     const categoryItemOnChange = (categoryId, selectedOptionId) => {
         let updatedSelected = cloneJSON(selectedItem)
         if( selectedItem ) {
