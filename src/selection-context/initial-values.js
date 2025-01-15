@@ -1,5 +1,6 @@
 import { readQueryParams } from '../navigation/index.js'
 import { parsePeriodId } from '../shared/index.js'
+import { getAttributeOptionComboIdExistInWorkflow } from '../utils/caterogy-combo-utils.js'
 
 export const initialValues = (workflows) => {
     const queryParams = readQueryParams()
@@ -55,16 +56,18 @@ export const initialAttributeOptionComboValue = (aoc, initialWorkflow = {}) => {
         return null
     }
 
-    const dataSets = initialWorkflow?.dataSets
-    for( var i=0; i<dataSets.length; i++ ) {
-        const dataSet = dataSets[i]
-        const categoryOptionCombos = dataSet.categoryCombo.categoryOptionCombos.filter((item => item.id === aoc))
-        if( categoryOptionCombos.length > 0 ) {
-            return categoryOptionCombos[0]
-        }
-    }
+    // const dataSets = initialWorkflow?.dataSets
+    // for( var i=0; i<dataSets.length; i++ ) {
+    //     const dataSet = dataSets[i]
+    //     const categoryOptionCombos = dataSet.categoryCombo.categoryOptionCombos.filter((item => item.id === aoc))
+    //     if( categoryOptionCombos.length > 0 ) {
+    //         return categoryOptionCombos[0]
+    //     }
+    // }
 
-    return;
+    // return;
+    
+    return getAttributeOptionComboIdExistInWorkflow( initialWorkflow, aoc )
 }
 
 export const initialDataSetValue = (dataSetParam) => {

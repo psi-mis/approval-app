@@ -48,6 +48,20 @@ export const getCategoryOptionComboById = (metadata, categoryOptionComboId) => {
     return
 }
 
+export const getAttributeOptionComboIdExistInWorkflow = ( workflow, attributeOptionComboId ) => {
+    const dataSets = JSON.parse(JSON.stringify(workflow.dataSets));
+    if( dataSets.length > 0 ) {
+        for( const dataSet of dataSets) {
+            const foundAttrOptionCombo = dataSet.categoryCombo.categoryOptionCombos.find((optionCombo => optionCombo.id === attributeOptionComboId))
+            if(foundAttrOptionCombo) {
+                return foundAttrOptionCombo
+            }
+        }
+    }
+  
+    return
+}
+
 export const getCategoryOptionsByCategoryOptionCombo = (metadata, categoryOptionComboId) => {
     const categoryCombos = metadata.categoryCombos
     for( const categoryCombo of categoryCombos ) {

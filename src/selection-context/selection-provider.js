@@ -4,6 +4,7 @@ import { useAppContext } from '../app-context/index.js'
 import { pushStateToHistory } from '../navigation/index.js'
 import { initialValues, initialWorkflowValue } from './initial-values.js'
 import { SelectionContext } from './selection-context.js'
+import { getAttributeOptionComboIdExistInWorkflow } from '../utils/caterogy-combo-utils.js'
 
 const ACTIONS = {
     SET_OPENED_SELECT: 'SET_OPENED_SELECT',
@@ -17,6 +18,9 @@ const ACTIONS = {
 }
 
 const reducer = (state, { type, payload }) => {
+    console.log("--- type: " + type)
+    console.log("state: ", state)
+    console.log("payload: ", payload)
     switch (type) {
         case ACTIONS.SET_OPENED_SELECT:
             return {
@@ -42,7 +46,9 @@ const reducer = (state, { type, payload }) => {
                     state.workflow?.periodType === payload.workflow?.periodType
                         ? state.period
                         : null,
-                attributeOptionCombo: null,
+                attributeOptionCombo: state.attributeOptionCombo
+                    ? getAttributeOptionComboIdExistInWorkflow(state.workflow, state.attributeOptionCombo?.id)
+                    : null,
                 dataSet: null,
             }
         case ACTIONS.SELECT_PERIOD:
