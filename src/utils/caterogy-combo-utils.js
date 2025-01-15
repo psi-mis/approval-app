@@ -74,6 +74,27 @@ export const getCategoryOptionsByCategoryOptionCombo = (metadata, categoryOption
     return
 }
 
+export const getDataSetReportFilter = (metadata, attributeOptionCombo) => {
+    const categoryOptions = attributeOptionCombo.categoryOptions
+    const catCombo = getCategoryComboByCategoryOptionCombo(metadata, attributeOptionCombo.id)
+    if( catCombo ) {
+        // Find and map categoryOptions to categories as an array of strings
+       return categoryOptions.map(option => {
+            const category = catCombo.categories.find(category =>
+                category.categoryOptions.some(catOption => catOption.id === option.id)
+            )
+        
+            if (category) {
+                return `${category.id}:${option.id}`;
+            }
+            
+            return null // In case no match is found
+        }).filter(Boolean) // Remove any null values
+    }
+    
+    return
+}
+
 export const getDataSetsInWorkflowByAttributeOptionCombo = (workflow, attributeOptionCombo) => {
     const result = [];
     

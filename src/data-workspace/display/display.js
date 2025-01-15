@@ -3,6 +3,7 @@ import i18n from '@dhis2/d2-i18n'
 import { NoticeBox, CircularLoader } from '@dhis2/ui'
 import PropTypes from 'prop-types'
 import React, { useEffect } from 'react'
+import { useAppContext } from '../../app-context/use-app-context.js'
 import { useSelectionContext } from '../../selection-context/index.js'
 import {
     getFixedPeriodsForTypeAndDateRange,
@@ -11,22 +12,26 @@ import {
 import styles from './display.module.css'
 import { TableCustomDataSet } from './table-custom-data-set.js'
 import { Table } from './table.js'
+import { getDataSetReportFilter } from '../../utils/caterogy-combo-utils.js'
 
 const query = {
     dataSetReport: {
         resource: 'dataSetReport',
-        params: ({ dataSetId, periodIds, orgUnit }) => ({
+        params: ({ dataSetId, periodIds, orgUnit, filter }) => ({
             // arrays are being handled by the app runtime
             pe: periodIds,
             ds: dataSetId,
             ou: orgUnit.id,
+            selectedUnitOnly: false,
+            filter: filter
         }),
     },
 }
 
 const Display = ({ dataSetId }) => {
+    const { metadata } = useAppContext()
     const selection = useSelectionContext()
-    const { orgUnit, workflow, period } = selection
+    const { orgUnit, workflow, period, attributeOptionCombo } = selection
     const { dataSets } = workflow
     const selectedDataSet = dataSets.find(({ id }) => id === dataSetId)
     const periodIds = selectedDataSet
@@ -36,21 +41,24 @@ const Display = ({ dataSetId }) => {
               period.endDate
           ).map(({ id }) => id)
         : []
+    const categoryFilter = attributeOptionCombo
+        ? getDataSetReportFilter(metadata, attributeOptionCombo)
+        : ""
 
     const { called, fetching, data, error, refetch } = useDataQuery(query, {
         lazy: true,
     })
     const tables = data?.dataSetReport
-    const fetchDataSet = () => refetch({ periodIds, dataSetId, orgUnit })
+    const fetchDataSet = () => refetch({ periodIds, dataSetId, orgUnit, filter: categoryFilter})
 
     useEffect(
         () => {
-            if (periodIds.length && dataSetId) {
+            if (workflow && periodIds.length && dataSetId && attributeOptionCombo && orgUnit) {
                 fetchDataSet()
             }
         },
         // joining so this produces a primitive value
-        [periodIds.join(','), dataSetId]
+        [workflow, periodIds.join(','), dataSetId, attributeOptionCombo, orgUnit]
     )
 
     if (!dataSets || dataSets.length === 0) {
