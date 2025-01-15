@@ -180,7 +180,7 @@ const AttributeComboSelect = () => {
                         >
                             {attributeCombos.map((catCombo) => (
                                 <SingleSelectOption
-                                    key={`wf_${workflow.id}_$catCombo.id}`}
+                                    key={`wf_${workflow?.id}_${catCombo?.id}`}
                                     value={catCombo.id}
                                     label={catCombo.displayName}
                                 />

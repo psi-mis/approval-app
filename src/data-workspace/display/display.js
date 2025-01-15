@@ -8,29 +8,26 @@ import {
     getFixedPeriodsForTypeAndDateRange,
     RetryButton,
 } from '../../shared/index.js'
-import { getDataSetsInWorkflowByAttributeOptionCombo } from '../../utils/caterogy-combo-utils.js'
-import { transformDataValues } from '../../utils/data-values-utils.js'
 import styles from './display.module.css'
 import { TableCustomDataSet } from './table-custom-data-set.js'
 import { Table } from './table.js'
 
 const query = {
-    dataValueSets: {
-        resource: 'dataValueSets',
-        params: ({ periodIds, dataSetId, orgUnit, attributeOptionCombo }) => ({
+    dataSetReport: {
+        resource: 'dataSetReport',
+        params: ({ dataSetId, periodIds, orgUnit }) => ({
             // arrays are being handled by the app runtime
-            period: periodIds,
-            dataSet: dataSetId,
-            orgUnit: orgUnit.id,
-            attributeOptionCombo: attributeOptionCombo.id
+            pe: periodIds,
+            ds: dataSetId,
+            ou: orgUnit.id,
         }),
     },
 }
 
 const Display = ({ dataSetId }) => {
     const selection = useSelectionContext()
-    const { orgUnit, workflow, period, attributeOptionCombo } = selection
-    const dataSets = getDataSetsInWorkflowByAttributeOptionCombo(workflow, attributeOptionCombo)
+    const { orgUnit, workflow, period } = selection
+    const { dataSets } = workflow
     const selectedDataSet = dataSets.find(({ id }) => id === dataSetId)
     const periodIds = selectedDataSet
         ? getFixedPeriodsForTypeAndDateRange(
@@ -43,19 +40,19 @@ const Display = ({ dataSetId }) => {
     const { called, fetching, data, error, refetch } = useDataQuery(query, {
         lazy: true,
     })
-    const dataValues = data?.dataValueSets.dataValues;
-    const fetchDataValues = () => refetch({periodIds, dataSetId, orgUnit, attributeOptionCombo})
+    const tables = data?.dataSetReport
+    const fetchDataSet = () => refetch({ periodIds, dataSetId, orgUnit })
 
     useEffect(
         () => {
-            if (workflow && periodIds.length && dataSetId && attributeOptionCombo && orgUnit) {
-                fetchDataValues();
+            if (periodIds.length && dataSetId) {
+                fetchDataSet()
             }
         },
         // joining so this produces a primitive value
-        [workflow, periodIds.join(','), dataSetId, attributeOptionCombo, orgUnit]
+        [periodIds.join(','), dataSetId]
     )
-    
+
     if (!dataSets || dataSets.length === 0) {
         return (
             <div className={styles.noData}>
@@ -103,7 +100,7 @@ const Display = ({ dataSetId }) => {
                             `This data set couldn't be loaded or displayed. Try again, or contact your system administrator.`
                         )}
                     </p>
-                    <RetryButton onClick={fetchDataValues}>
+                    <RetryButton onClick={fetchDataSet}>
                         {i18n.t('Retry loading data set')}
                     </RetryButton>
                 </NoticeBox>
@@ -111,52 +108,47 @@ const Display = ({ dataSetId }) => {
         )
     }
 
-    if (!periodIds.length || !dataValues.length) {
+    if (!periodIds.length || !tables.length) {
         return (
             <div className={styles.noData}>
                 <p>
                     {i18n.t(
-                        `This data set doesn't have any data for {{- period}} in {{- orgUnit}} and {{- attributeOptionCombo}}.`,
+                        `This data set doesn't have any data for {{- period}} in {{- orgUnit}}.`,
                         {
                             period: period.displayName,
                             orgUnit: orgUnit.displayName,
-                            attributeOptionCombo: attributeOptionCombo.displayName
                         }
                     )}
                 </p>
             </div>
         )
     }
-    
-    const flatDataValues = () => {
-        return transformDataValues(selectedDataSet, dataValues)
-    }
-    
+
     if (selectedDataSet.formType === 'CUSTOM') {
         return (
             <div className={styles.display}>
-                {/* {tables.map((table) => ( */}
+                {tables.map((table) => (
                     <TableCustomDataSet
-                        key={`${selectedDataSet.id} - ${attributeOptionCombo.id}`}
-                        title={`${selectedDataSet.displayName} - ${attributeOptionCombo.displayName}`}
-                        columns={[i18n.t("Data Element"), i18n.t("Value")]}
-                        rows={flatDataValues()}
+                        key={table.title}
+                        title={table.title}
+                        columns={table.headers.map((h) => h.name)}
+                        rows={table.rows}
                     />
-                {/* ))} */}
+                ))}
             </div>
         )
-        
     }
     return (
         <div className={styles.display}>
-            <Table
-                key={`${selectedDataSet.id} - ${attributeOptionCombo.id}`}
-                title={`${selectedDataSet.displayName} - ${attributeOptionCombo.displayName}`}
-                columns={[i18n.t("Data Element"), i18n.t("Value")]}
-                rows={flatDataValues()}
-            />
-    </div>
-    
+            {tables.map((table) => (
+                <Table
+                    key={table.title}
+                    title={table.title}
+                    columns={table.headers.map((h) => h.name)}
+                    rows={table.rows}
+                />
+            ))}
+        </div>
     )
 }
 
