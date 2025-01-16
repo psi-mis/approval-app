@@ -26,7 +26,7 @@ describe('pushStateToHistory', () => {
         expect(mock).toHaveBeenCalledTimes(1)
         expect(mock).toHaveBeenCalledWith({
             pathname: '/',
-            search: '?ou=789&pe=455&wf=123',
+            search: '?aoc=wertyuiopas&ou=789&pe=455&wf=123',
         })
     })
     it('updates broswer history when state and query params are equivalent', () => {

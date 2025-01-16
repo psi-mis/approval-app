@@ -48,17 +48,122 @@ const mockWorkflows = [
         displayName: 'Workflow a',
         id: 'i5m0JPw4DQi',
         periodType: 'Daily',
+        dataSets: [
+            {
+                name: "Data set 1",
+                id: "dataset_1",
+                periodType: "Daily",
+                categoryCombo: {
+                    displayName: "Combo 1",
+                    id: "combo_1",
+                    categories: [
+                        {
+                            name: "Category 1",
+                            displayName: "Category 1",
+                            id: "category_1",
+                            categoryOptions: [
+                                {
+                                    displayName: "Option 1",
+                                    id: "123"
+                                },
+                                {
+                                    displayName: "Option 2",
+                                    id: "456"
+                                },
+                            ]
+                        }
+                    ], 
+                    categoryOptionCombos: [
+                        {
+                            categoryOptions: [{id: "123" }],
+                            displayName: "Option Combo 1",
+                            id: "wertyuiopas"
+                        },
+                    ],
+                    isDefault: false
+                },
+            }
+        ]
     },
     {
         displayName: 'Workflow B',
         id: 'rIUL3hYOjJc',
         periodType: 'Daily',
+        dataSets: [
+            {
+                name: "Data set 2",
+                id: "dataset_2",
+                periodType: "Daily",
+                categoryCombo: {
+                    displayName: "Combo 1",
+                    id: "combo_1",
+                    categories: [
+                        {
+                            name: "Category 1",
+                            displayName: "Category 1",
+                            id: "category_1",
+                            categoryOptions: [
+                                {
+                                    displayName: "Option 1",
+                                    id: "123"
+                                },
+                                {
+                                    displayName: "Option 2",
+                                    id: "456"
+                                },
+                            ]
+                        }
+                    ], 
+                    categoryOptionCombos: [
+                        {
+                            categoryOptions: [{id: "123" }],
+                            displayName: "Option Combo 1",
+                            id: "wertyuiopas"
+                        },
+                    ],
+                    isDefault: false
+                },
+            }
+        ]
     },
 ]
 
 beforeEach(() => {
     useAppContext.mockImplementation(() => ({
         dataApprovalWorkflows: mockWorkflows,
+        metadata: {
+            categoryCombos: [
+                {
+                    displayName: "Combo 1",
+                    id: "combo_1",
+                    categories: [
+                        {
+                            name: "Category 1",
+                            displayName: "Category 1",
+                            id: "category_1",
+                            categoryOptions: [
+                                {
+                                    displayName: "Option 1",
+                                    id: "123"
+                                },
+                                {
+                                    displayName: "Option 2",
+                                    id: "456"
+                                },
+                            ]
+                        }
+                    ], 
+                    categoryOptionCombos: [
+                        {
+                            categoryOptions: [{id: "123" }],
+                            displayName: "Option Combo 1",
+                            id: "wertyuiopas"
+                        },
+                    ],
+                    isDefault: false
+                },
+            ]
+        }
     }))
 })
 
@@ -92,6 +197,7 @@ describe('useSelectionContext', () => {
             wf: 'rIUL3hYOjJc',
             pe: '20110203',
             ou: '/abc',
+            aoc: "wertyuiopas",
             dataSet: 'foobar',
             ouDisplayName: 'test',
         }))
@@ -114,8 +220,11 @@ describe('useSelectionContext', () => {
             id: 'abc',
             displayName: 'test',
         })
+
         expect(result.current.attributeOptionCombo).toEqual({
-            id: 'wertyuiopas',
+            categoryOptions: [ { id: '123' } ],
+            displayName: 'Option Combo 1',
+            id: 'wertyuiopas'
         })
         
     })

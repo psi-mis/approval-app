@@ -7,20 +7,132 @@ import {
 } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
+import { useAppContext } from '../../app-context/use-app-context.js'
 import { SelectionContext } from '../../selection-context/index.js'
 import { Display } from './display.js'
+
+
+beforeEach(() => {
+    useAppContext.mockImplementation(() => ({
+        metadata: {
+            categoryCombos: [
+                {
+                    displayName: "Combo 1",
+                    id: "combo_1",
+                    categories: [
+                        {
+                            name: "Category 1",
+                            displayName: "Category 1",
+                            id: "category_1",
+                            categoryOptions: [
+                                {
+                                    displayName: "Option 1",
+                                    id: "123"
+                                },
+                                {
+                                    displayName: "Option 2",
+                                    id: "456"
+                                },
+                            ]
+                        }
+                    ], 
+                    categoryOptionCombos: [
+                        {
+                            categoryOptions: [{id: "123" }],
+                            displayName: "Option Combo 1",
+                            id: "wertyuiopas"
+                        },
+                    ],
+                    isDefault: false
+                },
+            ]
+        }
+    }))
+})
 
 describe('<Display>', () => {
     const dataSetOne = {
         displayName: 'Mortality < 5 years',
         id: 'pBOMPrpg1QX',
         periodType: 'Monthly',
+        dataSets: [
+            {
+                name: "Data set 1",
+                id: "dataset_1",
+                periodType: "Daily",
+                categoryCombo: {
+                    displayName: "Combo 1",
+                    id: "combo_1",
+                    categories: [
+                        {
+                            name: "Category 1",
+                            displayName: "Category 1",
+                            id: "category_1",
+                            categoryOptions: [
+                                {
+                                    displayName: "Option 1",
+                                    id: "123"
+                                },
+                                {
+                                    displayName: "Option 2",
+                                    id: "456"
+                                },
+                            ]
+                        }
+                    ], 
+                    categoryOptionCombos: [
+                        {
+                            categoryOptions: [{id: "123" }],
+                            displayName: "Option Combo 1",
+                            id: "wertyuiopas"
+                        },
+                    ],
+                    isDefault: false
+                },
+            }
+        ]
     }
 
     const dataSetTwo = {
         displayName: 'Mortality > 4 years',
         id: 'pBOMPrpg1QZ',
         periodType: 'Monthly',
+        dataSets: [
+            {
+                name: "Data set 2",
+                id: "dataset_2",
+                periodType: "Daily",
+                categoryCombo: {
+                    displayName: "Combo 1",
+                    id: "combo_1",
+                    categories: [
+                        {
+                            name: "Category 1",
+                            displayName: "Category 1",
+                            id: "category_1",
+                            categoryOptions: [
+                                {
+                                    displayName: "Option 1",
+                                    id: "123"
+                                },
+                                {
+                                    displayName: "Option 2",
+                                    id: "456"
+                                },
+                            ]
+                        }
+                    ], 
+                    categoryOptionCombos: [
+                        {
+                            categoryOptions: [{id: "123" }],
+                            displayName: "Option Combo 1",
+                            id: "wertyuiopas"
+                        },
+                    ],
+                    isDefault: false
+                },
+            }
+        ]
     }
 
     it('asks the user to select a data set if none is selected', () => {

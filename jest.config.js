@@ -5,10 +5,4 @@ module.exports = {
     moduleNameMapper: {
         '\\.css$': 'identity-obj-proxy',
     },
-    
-    testEnvironment: 'jsdom', // or 'node'
-    globals: {
-        Uint8Array: Uint8Array,
-    },
-    preset: 'ts-jest',
 }

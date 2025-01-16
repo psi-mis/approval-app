@@ -22,16 +22,89 @@ jest.mock('../../selection-context/index.js', () => ({
     useSelectionContext: jest.fn(),
 }))
 
+
 const mockWorkflows = [
     {
         displayName: 'Workflow a',
         id: 'i5m0JPw4DQi',
         periodType: 'Daily',
+        dataSets: [
+            {
+                name: "Data set 1",
+                id: "dataset_1",
+                periodType: "Daily",
+                categoryCombo: {
+                    displayName: "Combo 1",
+                    id: "combo_1",
+                    categories: [
+                        {
+                            name: "Category 1",
+                            displayName: "Category 1",
+                            id: "category_1",
+                            categoryOptions: [
+                                {
+                                    displayName: "Option 1",
+                                    id: "123"
+                                },
+                                {
+                                    displayName: "Option 2",
+                                    id: "456"
+                                },
+                            ]
+                        }
+                    ], 
+                    categoryOptionCombos: [
+                        {
+                            categoryOptions: [{id: "123" }],
+                            displayName: "Option Combo 1",
+                            id: "wertyuiopas"
+                        },
+                    ],
+                    isDefault: false
+                },
+            }
+        ]
     },
     {
         displayName: 'Workflow B',
         id: 'rIUL3hYOjJc',
         periodType: 'Daily',
+        dataSets: [
+            {
+                name: "Data set 2",
+                id: "dataset_2",
+                periodType: "Daily",
+                categoryCombo: {
+                    displayName: "Combo 1",
+                    id: "combo_1",
+                    categories: [
+                        {
+                            name: "Category 1",
+                            displayName: "Category 1",
+                            id: "category_1",
+                            categoryOptions: [
+                                {
+                                    displayName: "Option 1",
+                                    id: "123"
+                                },
+                                {
+                                    displayName: "Option 2",
+                                    id: "456"
+                                },
+                            ]
+                        }
+                    ], 
+                    categoryOptionCombos: [
+                        {
+                            categoryOptions: [{id: "123" }],
+                            displayName: "Option Combo 1",
+                            id: "wertyuiopas"
+                        },
+                    ],
+                    isDefault: false
+                },
+            }
+        ]
     },
 ]
 const mockOrgUnitRoots = [
@@ -66,6 +139,7 @@ describe('<AttributeComboSelect>', () => {
             setOpenedSelect: () => {},
         }))
         const wrapper = shallow(<AttributeComboSelect />)
+        console.log("=== renders a AttributeComboSelect in a ContextSelect: ", wrapper);
         expect(wrapper.type()).toBe(ContextSelect)
     })
     
@@ -277,25 +351,6 @@ describe('<AttributeComboSelect>', () => {
         expect(setOpenedSelect).toHaveBeenCalledWith('')
     })
 
-    it('displays the correct tooltip text when workflow and period have not been set yet', () => {
-        useSelectionContext.mockImplementation(() => ({
-            workflow: {},
-            period: {},
-            orgUnit: {},
-            attributeOptionCombo: {},
-            openedSelect: '',
-            selectWorkflow: () => {},
-            setOpenedSelect: () => {},
-        }))
-
-        const wrapper = shallow(<AttributeComboSelect />)
-        const tooltip = wrapper.find(ContextSelect).dive().find(Tooltip)
-
-        expect(tooltip.prop('content')).toBe(
-            'Choose a workflow, a period and an organisation unit first'
-        )
-    })
-
     it('displays the correct tooltip text when an orgUnit has not been set yet', () => {
         useSelectionContext.mockImplementation(() => ({
             workflow: {
@@ -315,5 +370,30 @@ describe('<AttributeComboSelect>', () => {
         const tooltip = wrapper.find(ContextSelect).dive().find(Tooltip)
 
         expect(tooltip.prop('content')).toBe('Choose an organisation unit first')
+    })
+    
+    it('displays the correct tooltip text when a period has not been set yet', () => {
+        useSelectionContext.mockImplementation(() => ({
+            workflow: {
+                id: 'i5m0JPw4DQi',
+            },
+            period: {},
+            orgUnit: {
+                displayName: 'Sierra Leone',
+                id: 'ImspTQPwCqd',
+                path: '/ImspTQPwCqd'
+            },
+            attributeOptionCombo: {},
+            openedSelect: '',
+            selectWorkflow: () => {},
+            setOpenedSelect: () => {},
+        }))
+
+        const wrapper = shallow(<AttributeComboSelect />)
+        const tooltip = wrapper.find(ContextSelect).dive().find(Tooltip)
+console.log("=== wrapper", wrapper)
+console.log("wrapper.find(ContextSelect)", wrapper.find(ContextSelect))
+console.log("tooltip", tooltip)
+        expect(tooltip.prop('content')).toBe('Choose a period first')
     })
 })
