@@ -23,7 +23,8 @@ const query = {
                 'displayName',
                 'dataApprovalLevels',
                 'periodType',
-                'dataSets[dataSetElements[dataElement[id,displayName]],id,displayName,periodType,name,categoryCombo[isDefault,id,displayName,name,categories[displayName,name,id,categoryOptions[id,displayName,name]],categoryOptionCombos[id,displayName,categoryOptions]]]'
+                'dataSets[dataSetElements[dataElement[id,displayName]],id,displayName,periodType,name,categoryCombo[id]]'
+                // 'dataSets[dataSetElements[dataElement[id,displayName]],id,displayName,periodType,name,categoryCombo[isDefault,id,displayName,name,categories[displayName,name,id,categoryOptions[id,displayName,name]],categoryOptionCombos[id,displayName,categoryOptions]]]'
             ],
         },
     },
@@ -35,7 +36,8 @@ const query = {
                 'id',
                 'displayName',
                 'isDefault',
-                'categories[displayName,name,id,categoryOptions[id,displayName]]',
+                'categories[displayName,name,id,categoryOptions[id,displayName,name]]',
+                // 'categories[displayName,name,id,categoryOptions[id,displayName]]',
                 'categoryOptionCombos[id,displayName,categoryOptions]',
             ],
         },

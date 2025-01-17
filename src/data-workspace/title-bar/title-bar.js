@@ -6,12 +6,14 @@ import { ApprovalStatusTag } from '../../shared/approval-status/index.js'
 import { getDataSetsInWorkflowByAttributeOptionCombo } from '../../utils/caterogy-combo-utils.js'
 import { useWorkflowContext } from '../../workflow-context/index.js'
 import styles from './title-bar.module.css'
+import { useAppContext } from '../../app-context/use-app-context.js'
 
 const TitleBar = () => {
+    const { metadata } = useAppContext()
     const { approvalStatus, approvedBy, approvedAt } = useWorkflowContext()
     const { workflow, attributeOptionCombo } = useSelectionContext()
     const { displayName: name } = workflow
-    const dataSets = getDataSetsInWorkflowByAttributeOptionCombo(workflow, attributeOptionCombo)
+    const dataSets = getDataSetsInWorkflowByAttributeOptionCombo(metadata, workflow, attributeOptionCombo)
     const dataSetsCount = dataSets.length
 
     return (

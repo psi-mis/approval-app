@@ -8,7 +8,8 @@ export const getCategoryCombos = (metadata, workflow) => {
         for( const dataSet of dataSets) {
             const valid = checkCategoryComboAndDataSetAssigned(metadata, dataSet)
             if(valid) {
-                categoryComboList.push(dataSet.categoryCombo)
+                const attributeCombo = getAttributeComboById(metadata, dataSet.categoryCombo.id)
+                categoryComboList.push(attributeCombo)
             }
         }
         
@@ -22,6 +23,10 @@ export const getCategoryCombos = (metadata, workflow) => {
     }
 
     return categoryComboList
+}
+
+export const getAttributeComboById = (metadata, attributeComboById) => {
+    return metadata.categoryCombos.find((item => item.id === attributeComboById))
 }
 
 export const getCategoryComboByCategoryOptionCombo = (metadata, categoryOptionComboId) => {
@@ -49,11 +54,12 @@ export const getCategoryOptionComboById = (metadata, categoryOptionComboId) => {
     return
 }
 
-export const getAttributeOptionComboIdExistInWorkflow = ( workflow, attributeOptionComboId ) => {
+export const getAttributeOptionComboIdExistInWorkflow = ( metadata, workflow, attributeOptionComboId ) => {
     const dataSets = JSON.parse(JSON.stringify(workflow.dataSets));
     if( dataSets.length > 0 ) {
         for( const dataSet of dataSets) {
-            const foundAttrOptionCombo = dataSet.categoryCombo.categoryOptionCombos.find((optionCombo => optionCombo.id === attributeOptionComboId))
+            const categoryCombo = getAttributeComboById(metadata, dataSet.categoryCombo.id)
+            const foundAttrOptionCombo = categoryCombo.categoryOptionCombos.find((optionCombo => optionCombo.id === attributeOptionComboId))
             if(foundAttrOptionCombo) {
                 return foundAttrOptionCombo
             }
@@ -79,11 +85,9 @@ export const getDataSetReportFilter = (metadata, attributeOptionCombo) => {
     if( !attributeOptionCombo ) return
     
     const categoryOptions = attributeOptionCombo.categoryOptions
-console.log("=== getDataSetReportFilter -- attributeOptionCombo: ", attributeOptionCombo)
-console.log("-- categoryOptions: ", categoryOptions)
     const catCombo = getCategoryComboByCategoryOptionCombo(metadata, attributeOptionCombo.id)
     if( catCombo ) {
-        console.log("-- catCombo.categories ", JSON.stringify(catCombo.categories))
+        if( catCombo.isDefault ) return
         // Find and map categoryOptions to categories as an array of strings
         return categoryOptions.map(option => {
             const category = catCombo.categories.find(category =>
@@ -101,13 +105,14 @@ console.log("-- categoryOptions: ", categoryOptions)
     return
 }
 
-export const getDataSetsInWorkflowByAttributeOptionCombo = (workflow, attributeOptionCombo) => {
+export const getDataSetsInWorkflowByAttributeOptionCombo = (metadata, workflow, attributeOptionCombo) => {
     const result = [];
     
     if( attributeOptionCombo ) {
         const dataSets = workflow?.dataSets
         for( const dataSet of dataSets ) {
-            const found = dataSet.categoryCombo.categoryOptionCombos.find((dsCatOptionCombo => dsCatOptionCombo.id === attributeOptionCombo.id))
+            const catCombo = getAttributeComboById(metadata, dataSet.categoryCombo.id)
+            const found = catCombo.categoryOptionCombos.find((dsCatOptionCombo => dsCatOptionCombo.id === attributeOptionCombo.id))
             if( found ) {
                 result.push(dataSet)
             }
@@ -129,7 +134,6 @@ const checkCategoryComboAndDataSetAssigned = (metadata, dataSet) => {
         return false
     }
 
-    // const categoryCombo = categoryCombos[dataSet.categoryCombo?.id]
     const categoryCombo = categoryCombos.find((item => item.id === dataSet.categoryCombo?.id))
     if (!categoryCombo) {
         console.warn(`Could not find a category combo for data set with id ${dataSet.id}`)

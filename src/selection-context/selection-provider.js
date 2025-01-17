@@ -44,7 +44,7 @@ const reducer = (state, { type, payload }) => {
                         ? state.period
                         : null,
                 attributeOptionCombo: state.attributeOptionCombo
-                    ? getAttributeOptionComboIdExistInWorkflow(state.workflow, state.attributeOptionCombo?.id)
+                    ? getAttributeOptionComboIdExistInWorkflow(payload.metadata, state.workflow, state.attributeOptionCombo?.id)
                     : null,
                 dataSet: null,
             }
@@ -80,7 +80,7 @@ const reducer = (state, { type, payload }) => {
         case ACTIONS.SET_STATE_FROM_QUERY_PARAMS:
             return {
                 openedSelect: '',
-                ...initialValues(payload.dataApprovalWorkflows),
+                ...initialValues(payload.metadata, payload.dataApprovalWorkflows),
             }
         default:
             return state
@@ -88,11 +88,11 @@ const reducer = (state, { type, payload }) => {
 }
 
 const SelectionProvider = ({ children }) => {
-    const { dataApprovalWorkflows } = useAppContext()
+    const { metadata, dataApprovalWorkflows } = useAppContext()
     const [{ openedSelect, workflow, period, orgUnit, dataSet, attributeOptionCombo}, dispatch] =
         useReducer(reducer, {
             openedSelect: '',
-            ...initialValues(dataApprovalWorkflows),
+            ...initialValues(metadata, dataApprovalWorkflows),
         })
 
     const providerValue = {
@@ -117,7 +117,7 @@ const SelectionProvider = ({ children }) => {
                 },
             }),
         selectWorkflow: (workflow) =>
-            dispatch({ type: ACTIONS.SELECT_WORKFLOW, payload: { workflow } }),
+            dispatch({ type: ACTIONS.SELECT_WORKFLOW, payload: { metadata, workflow } }),
         selectPeriod: (period) =>
             dispatch({ type: ACTIONS.SELECT_PERIOD, payload: { period } }),
         selectOrgUnit: (orgUnit) =>
@@ -137,6 +137,7 @@ const SelectionProvider = ({ children }) => {
             dispatch({
                 type: ACTIONS.SET_STATE_FROM_QUERY_PARAMS,
                 payload: {
+                    metadata,
                     dataApprovalWorkflows,
                 },
             })

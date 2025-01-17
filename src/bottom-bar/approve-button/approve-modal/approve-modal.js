@@ -13,10 +13,12 @@ import React from 'react'
 import { useSelectionContext } from '../../../selection-context/index.js'
 import { getDataSetsInWorkflowByAttributeOptionCombo } from '../../../utils/caterogy-combo-utils.js'
 import styles from './approve-modal.module.css'
+import { useAppContext } from '../../../app-context/use-app-context.js'
 
 const ApproveModal = ({ onApprove, onCancel, error }) => {
+    const { metadata } = useAppContext()
     const { workflow, attributeOptionCombo } = useSelectionContext()
-    const dataSets = getDataSetsInWorkflowByAttributeOptionCombo(workflow, attributeOptionCombo)
+    const dataSets = getDataSetsInWorkflowByAttributeOptionCombo(metadata, workflow, attributeOptionCombo)
     const count = dataSets.length
 
     return (
