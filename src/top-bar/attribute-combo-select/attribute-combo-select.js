@@ -1,9 +1,9 @@
 import i18n from '@dhis2/d2-i18n'
-import { Divider, SingleSelect, SingleSelectField, SingleSelectOption} from '@dhis2/ui'
+import { Divider, SingleSelect, SingleSelectOption} from '@dhis2/ui'
 import React, { useEffect, useState } from 'react'
 import { useAppContext } from '../../app-context/use-app-context.js'
 import { useSelectionContext } from '../../selection-context/index.js'
-import { cloneJSON, findObject } from '../../utils/array-utils.js'
+import { findObject } from '../../utils/array-utils.js'
 import { getCategoryComboByCategoryOptionCombo, getCategoryCombos, getCategoryOptionComboById, getCategoryOptionsByCategoryOptionCombo } from '../../utils/caterogy-combo-utils.js'
 import { ContextSelect } from '../context-select/context-select.js'
 import css from './attribute-combo-select.module.css'
@@ -63,10 +63,14 @@ const AttributeComboSelect = () => {
     };
     
     useEffect(() => {
+        console.log("useEffect is running");
+        
         // Fetch and set the category combos
         const _attributeCombos = getCategoryCombos(metadata, workflow)
         setAttributeCombos(_attributeCombos)
-        
+console.log("=== AttributeComboSelect --- metadata : ", metadata);
+console.log("--- _attributeCombos : ", _attributeCombos);
+console.log("--- workflow : ", workflow);
         let _attributeCombo = null
         let _attributeOptionCombo = null
         
@@ -156,6 +160,13 @@ const AttributeComboSelect = () => {
         }
     }
     
+    if (!workflow || Object.keys(workflow).length < 0) {
+        return null; // Renders nothing
+    }
+    
+    console.log("=== attributeOptionCombo : ", attributeOptionCombo)
+    console.log("selectedAttributeCombo : ", selectedAttributeCombo)
+    console.log("attrComboValue : ", attrComboValue)
     return (
         <>
             {showed && <ContextSelect 

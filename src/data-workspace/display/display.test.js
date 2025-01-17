@@ -7,10 +7,13 @@ import {
 } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
-import { useAppContext } from '../../app-context/use-app-context.js'
+import { useAppContext } from '../../app-context/index.js'
 import { SelectionContext } from '../../selection-context/index.js'
 import { Display } from './display.js'
 
+jest.mock('../../app-context/index.js', () => ({
+    useAppContext: jest.fn(),
+}))
 
 beforeEach(() => {
     useAppContext.mockImplementation(() => ({
@@ -50,89 +53,79 @@ beforeEach(() => {
     }))
 })
 
+afterEach(() => {
+    jest.resetAllMocks()
+})
+
 describe('<Display>', () => {
     const dataSetOne = {
         displayName: 'Mortality < 5 years',
         id: 'pBOMPrpg1QX',
         periodType: 'Monthly',
-        dataSets: [
-            {
-                name: "Data set 1",
-                id: "dataset_1",
-                periodType: "Daily",
-                categoryCombo: {
-                    displayName: "Combo 1",
-                    id: "combo_1",
-                    categories: [
+        categoryCombo: {
+            displayName: "Combo 1",
+            id: "combo_1",
+            categories: [
+                {
+                    name: "Category 1",
+                    displayName: "Category 1",
+                    id: "category_1",
+                    categoryOptions: [
                         {
-                            name: "Category 1",
-                            displayName: "Category 1",
-                            id: "category_1",
-                            categoryOptions: [
-                                {
-                                    displayName: "Option 1",
-                                    id: "123"
-                                },
-                                {
-                                    displayName: "Option 2",
-                                    id: "456"
-                                },
-                            ]
-                        }
-                    ], 
-                    categoryOptionCombos: [
-                        {
-                            categoryOptions: [{id: "123" }],
-                            displayName: "Option Combo 1",
-                            id: "wertyuiopas"
+                            displayName: "Option 1",
+                            id: "123"
                         },
-                    ],
-                    isDefault: false
+                        {
+                            displayName: "Option 2",
+                            id: "456"
+                        },
+                    ]
+                }
+            ], 
+            categoryOptionCombos: [
+                {
+                    categoryOptions: [{id: "123" }],
+                    displayName: "Option Combo 1",
+                    id: "wertyuiopas"
                 },
-            }
-        ]
+            ],
+            isDefault: false
+        }
     }
 
     const dataSetTwo = {
         displayName: 'Mortality > 4 years',
         id: 'pBOMPrpg1QZ',
         periodType: 'Monthly',
-        dataSets: [
-            {
-                name: "Data set 2",
-                id: "dataset_2",
-                periodType: "Daily",
-                categoryCombo: {
-                    displayName: "Combo 1",
-                    id: "combo_1",
-                    categories: [
+        categoryCombo: {
+            displayName: "Combo 1",
+            id: "combo_1",
+            categories: [
+                {
+                    name: "Category 1",
+                    displayName: "Category 1",
+                    id: "category_1",
+                    categoryOptions: [
                         {
-                            name: "Category 1",
-                            displayName: "Category 1",
-                            id: "category_1",
-                            categoryOptions: [
-                                {
-                                    displayName: "Option 1",
-                                    id: "123"
-                                },
-                                {
-                                    displayName: "Option 2",
-                                    id: "456"
-                                },
-                            ]
-                        }
-                    ], 
-                    categoryOptionCombos: [
-                        {
-                            categoryOptions: [{id: "123" }],
-                            displayName: "Option Combo 1",
-                            id: "wertyuiopas"
+                            displayName: "Option 1",
+                            id: "123"
                         },
-                    ],
-                    isDefault: false
+                        {
+                            displayName: "Option 2",
+                            id: "456"
+                        },
+                    ]
+                }
+            ], 
+            categoryOptionCombos: [
+                {
+                    categoryOptions: [{id: "123" }],
+                    displayName: "Option Combo 1",
+                    id: "wertyuiopas"
                 },
-            }
-        ]
+            ],
+            isDefault: false
+        }
     }
 
     it('asks the user to select a data set if none is selected', () => {
@@ -194,6 +187,10 @@ describe('<Display>', () => {
                     value={{
                         attributeOptionCombo: {
                             id: "wertyuiopas",
+                            displayName: "Option Combo 1",
+                            categoryOptions: [{
+                                id: "123"
+                            }]
                         },
                         orgUnit: {
                             id: 'ou-2',
@@ -234,6 +231,10 @@ describe('<Display>', () => {
                     value={{
                         attributeOptionCombo: {
                             id: "wertyuiopas",
+                            displayName: "Option Combo 1",
+                            categoryOptions: [{
+                                id: "123"
+                            }]
                         },
                         orgUnit: {
                             id: 'ou-2',
@@ -301,6 +302,10 @@ describe('<Display>', () => {
                     value={{
                         attributeOptionCombo: {
                             id: "wertyuiopas",
+                            displayName: "Option Combo 1",
+                            categoryOptions: [{
+                                id: "123"
+                            }]
                         },
                         orgUnit: {
                             id: 'ou-2',
@@ -480,6 +485,35 @@ describe('<Display>', () => {
                                         id: 'custom',
                                         periodType: 'Monthly',
                                         formType: 'Default',
+                                        categoryCombo: {
+                                            displayName: "Combo 1",
+                                            id: "combo_1",
+                                            categories: [
+                                                {
+                                                    name: "Category 1",
+                                                    displayName: "Category 1",
+                                                    id: "category_1",
+                                                    categoryOptions: [
+                                                        {
+                                                            displayName: "Option 1",
+                                                            id: "123"
+                                                        },
+                                                        {
+                                                            displayName: "Option 2",
+                                                            id: "456"
+                                                        },
+                                                    ]
+                                                }
+                                            ], 
+                                            categoryOptionCombos: [
+                                                {
+                                                    categoryOptions: [{id: "123" }],
+                                                    displayName: "Option Combo 1",
+                                                    id: "wertyuiopas"
+                                                },
+                                            ],
+                                            isDefault: false
+                                        }
                                     },
                                 ],
                                 dataApprovalLevels: [],

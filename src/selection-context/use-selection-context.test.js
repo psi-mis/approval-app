@@ -36,7 +36,43 @@ expect.extend({
 })
 
 beforeEach(() => {
-    readQueryParams.mockImplementation(() => ({}))
+    readQueryParams.mockImplementation(() => ({})),
+    useAppContext.mockImplementation(() => ({
+        dataApprovalWorkflows: mockWorkflows,
+        metadata: {
+            categoryCombos: [
+                {
+                    displayName: "Combo 1",
+                    id: "combo_1",
+                    categories: [
+                        {
+                            name: "Category 1",
+                            displayName: "Category 1",
+                            id: "category_1",
+                            categoryOptions: [
+                                {
+                                    displayName: "Option 1",
+                                    id: "123"
+                                },
+                                {
+                                    displayName: "Option 2",
+                                    id: "456"
+                                },
+                            ]
+                        }
+                    ], 
+                    categoryOptionCombos: [
+                        {
+                            categoryOptions: [{id: "123" }],
+                            displayName: "Option Combo 1",
+                            id: "wertyuiopas"
+                        },
+                    ],
+                    isDefault: false
+                },
+            ]
+        }
+    }))
 })
 
 afterEach(() => {
@@ -128,44 +164,6 @@ const mockWorkflows = [
     },
 ]
 
-beforeEach(() => {
-    useAppContext.mockImplementation(() => ({
-        dataApprovalWorkflows: mockWorkflows,
-        metadata: {
-            categoryCombos: [
-                {
-                    displayName: "Combo 1",
-                    id: "combo_1",
-                    categories: [
-                        {
-                            name: "Category 1",
-                            displayName: "Category 1",
-                            id: "category_1",
-                            categoryOptions: [
-                                {
-                                    displayName: "Option 1",
-                                    id: "123"
-                                },
-                                {
-                                    displayName: "Option 2",
-                                    id: "456"
-                                },
-                            ]
-                        }
-                    ], 
-                    categoryOptionCombos: [
-                        {
-                            categoryOptions: [{id: "123" }],
-                            displayName: "Option Combo 1",
-                            id: "wertyuiopas"
-                        },
-                    ],
-                    isDefault: false
-                },
-            ]
-        }
-    }))
-})
 
 describe('useSelectionContext', () => {
     const wrapper = ({ children }) => (

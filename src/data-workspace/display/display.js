@@ -3,16 +3,16 @@ import i18n from '@dhis2/d2-i18n'
 import { NoticeBox, CircularLoader } from '@dhis2/ui'
 import PropTypes from 'prop-types'
 import React, { useEffect } from 'react'
-import { useAppContext } from '../../app-context/use-app-context.js'
+import { useAppContext } from '../../app-context/index.js'
 import { useSelectionContext } from '../../selection-context/index.js'
 import {
     getFixedPeriodsForTypeAndDateRange,
     RetryButton,
 } from '../../shared/index.js'
+import { getDataSetReportFilter } from '../../utils/caterogy-combo-utils.js'
 import styles from './display.module.css'
 import { TableCustomDataSet } from './table-custom-data-set.js'
 import { Table } from './table.js'
-import { getDataSetReportFilter } from '../../utils/caterogy-combo-utils.js'
 
 const query = {
     dataSetReport: {

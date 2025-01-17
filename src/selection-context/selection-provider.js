@@ -18,9 +18,6 @@ const ACTIONS = {
 }
 
 const reducer = (state, { type, payload }) => {
-    console.log("--- type: " + type)
-    console.log("state: ", state)
-    console.log("payload: ", payload)
     switch (type) {
         case ACTIONS.SET_OPENED_SELECT:
             return {

@@ -33,6 +33,7 @@ export const getCategoryComboByCategoryOptionCombo = (metadata, categoryOptionCo
         }
     }
     
+    console.log("NOT FOUND")
     return
 }
 
@@ -75,11 +76,16 @@ export const getCategoryOptionsByCategoryOptionCombo = (metadata, categoryOption
 }
 
 export const getDataSetReportFilter = (metadata, attributeOptionCombo) => {
+    if( !attributeOptionCombo ) return
+    
     const categoryOptions = attributeOptionCombo.categoryOptions
+console.log("=== getDataSetReportFilter -- attributeOptionCombo: ", attributeOptionCombo)
+console.log("-- categoryOptions: ", categoryOptions)
     const catCombo = getCategoryComboByCategoryOptionCombo(metadata, attributeOptionCombo.id)
     if( catCombo ) {
+        console.log("-- catCombo.categories ", JSON.stringify(catCombo.categories))
         // Find and map categoryOptions to categories as an array of strings
-       return categoryOptions.map(option => {
+        return categoryOptions.map(option => {
             const category = catCombo.categories.find(category =>
                 category.categoryOptions.some(catOption => catOption.id === option.id)
             )
