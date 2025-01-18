@@ -23,7 +23,7 @@ const query = {
                 'displayName',
                 'dataApprovalLevels',
                 'periodType',
-                'dataSets[dataSetElements[dataElement[id,displayName]],id,displayName,periodType,name,categoryCombo[id]]'
+                'dataSets[id,displayName,periodType,formType,categoryCombo[id]]'
                 // 'dataSets[dataSetElements[dataElement[id,displayName]],id,displayName,periodType,name,categoryCombo[isDefault,id,displayName,name,categories[displayName,name,id,categoryOptions[id,displayName,name]],categoryOptionCombos[id,displayName,categoryOptions]]]'
             ],
         },
