@@ -20,8 +20,8 @@ export const getCategoryCombos = (metadata, workflow) => {
               return acc
             }, {})
         );
-    }
-
+    }  
+    
     return categoryComboList
 }
 
@@ -38,7 +38,6 @@ export const getCategoryComboByCategoryOptionCombo = (metadata, categoryOptionCo
         }
     }
     
-    console.log("NOT FOUND")
     return
 }
 

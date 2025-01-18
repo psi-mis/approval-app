@@ -63,14 +63,9 @@ const AttributeComboSelect = () => {
     };
     
     useEffect(() => {
-        console.log("useEffect is running");
-        
         // Fetch and set the category combos
         const _attributeCombos = getCategoryCombos(metadata, workflow)
         setAttributeCombos(_attributeCombos)
-console.log("=== AttributeComboSelect --- metadata : ", metadata);
-console.log("--- _attributeCombos : ", _attributeCombos);
-console.log("--- workflow : ", workflow);
         let _attributeCombo = null
         let _attributeOptionCombo = null
         
@@ -105,7 +100,7 @@ console.log("--- workflow : ", workflow);
             _attributeOptionCombo = null
             // setSelectedAttributeCombo(null)
         }
-    
+        
         // Update states only if values have changed
         setSelectedAttributeCombo(_attributeCombo);
         selectAttributeOptionCombo(_attributeOptionCombo);
@@ -164,9 +159,6 @@ console.log("--- workflow : ", workflow);
         return null; // Renders nothing
     }
     
-    console.log("=== attributeOptionCombo : ", attributeOptionCombo)
-    console.log("selectedAttributeCombo : ", selectedAttributeCombo)
-    console.log("attrComboValue : ", attrComboValue)
     return (
         <>
             {showed && <ContextSelect 

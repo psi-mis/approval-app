@@ -63,33 +63,7 @@ describe('<Display>', () => {
         id: 'pBOMPrpg1QX',
         periodType: 'Monthly',
         categoryCombo: {
-            displayName: "Combo 1",
-            id: "combo_1",
-            categories: [
-                {
-                    name: "Category 1",
-                    displayName: "Category 1",
-                    id: "category_1",
-                    categoryOptions: [
-                        {
-                            displayName: "Option 1",
-                            id: "123"
-                        },
-                        {
-                            displayName: "Option 2",
-                            id: "456"
-                        },
-                    ]
-                }
-            ], 
-            categoryOptionCombos: [
-                {
-                    categoryOptions: [{id: "123" }],
-                    displayName: "Option Combo 1",
-                    id: "wertyuiopas"
-                },
-            ],
-            isDefault: false
+            id: "combo_1"
         }
     }
 
@@ -99,32 +73,7 @@ describe('<Display>', () => {
         periodType: 'Monthly',
         categoryCombo: {
             displayName: "Combo 1",
-            id: "combo_1",
-            categories: [
-                {
-                    name: "Category 1",
-                    displayName: "Category 1",
-                    id: "category_1",
-                    categoryOptions: [
-                        {
-                            displayName: "Option 1",
-                            id: "123"
-                        },
-                        {
-                            displayName: "Option 2",
-                            id: "456"
-                        },
-                    ]
-                }
-            ], 
-            categoryOptionCombos: [
-                {
-                    categoryOptions: [{id: "123" }],
-                    displayName: "Option Combo 1",
-                    id: "wertyuiopas"
-                },
-            ],
-            isDefault: false
+            id: "combo_1"
         }
     }
 
@@ -379,6 +328,10 @@ describe('<Display>', () => {
                         value={{
                             attributeOptionCombo: {
                                 id: "wertyuiopas",
+                                displayName: "Option Combo 1",
+                                categoryOptions: [{
+                                    id: "123"
+                                }]
                             },
                             orgUnit: {
                                 id: 'ou-2',
@@ -464,6 +417,10 @@ describe('<Display>', () => {
                         value={{
                             attributeOptionCombo: {
                                 id: "wertyuiopas",
+                                displayName: "Option Combo 1",
+                                categoryOptions: [{
+                                    id: "123"
+                                }]
                             },
                             orgUnit: {
                                 id: 'ou-2',
@@ -486,33 +443,7 @@ describe('<Display>', () => {
                                         periodType: 'Monthly',
                                         formType: 'Default',
                                         categoryCombo: {
-                                            displayName: "Combo 1",
-                                            id: "combo_1",
-                                            categories: [
-                                                {
-                                                    name: "Category 1",
-                                                    displayName: "Category 1",
-                                                    id: "category_1",
-                                                    categoryOptions: [
-                                                        {
-                                                            displayName: "Option 1",
-                                                            id: "123"
-                                                        },
-                                                        {
-                                                            displayName: "Option 2",
-                                                            id: "456"
-                                                        },
-                                                    ]
-                                                }
-                                            ], 
-                                            categoryOptionCombos: [
-                                                {
-                                                    categoryOptions: [{id: "123" }],
-                                                    displayName: "Option Combo 1",
-                                                    id: "wertyuiopas"
-                                                },
-                                            ],
-                                            isDefault: false
+                                            id: "combo_1"
                                         }
                                     },
                                 ],
