@@ -9,7 +9,7 @@ export const initialValues = (metadata, workflows) => {
     const workflow = initialWorkflowValue(workflows, wf)
     const period = initialPeriodValue(pe, workflow)
     const orgUnit = initialOrgUnitValue(ou, ouDisplayName)
-    const attributeOptionCombo = initialAttributeOptionComboValue(aoc, workflow, metadata)
+    const attributeOptionCombo = initialAttributeOptionComboValue(aoc, workflow, orgUnit, metadata)
     const dataSet = initialDataSetValue(dataSetParam)
 
     return { workflow, period, orgUnit, dataSet, attributeOptionCombo}
@@ -51,12 +51,12 @@ export const initialOrgUnitValue = (path, displayName) => {
     return { id, path, displayName }
 }
 
-export const initialAttributeOptionComboValue = (aoc, initialWorkflow = {}, metadata = {}) => {
+export const initialAttributeOptionComboValue = (aoc, initialWorkflow = {}, orgUnit, metadata = {}) => {
     if (!aoc || !initialWorkflow.id || !metadata.categoryCombos ) {
         return null
     }
 
-    return getAttributeOptionComboIdExistInWorkflow( metadata, initialWorkflow, aoc )
+    return getAttributeOptionComboIdExistInWorkflow( metadata, initialWorkflow, aoc, orgUnit?.id )
 }
 
 export const initialDataSetValue = (dataSetParam) => {

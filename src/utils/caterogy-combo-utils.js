@@ -53,14 +53,25 @@ export const getCategoryOptionComboById = (metadata, categoryOptionComboId) => {
     return
 }
 
-export const getAttributeOptionComboIdExistInWorkflow = ( metadata, workflow, attributeOptionComboId ) => {
+export const getAttributeOptionComboIdExistInWorkflow = ( metadata, workflow, attributeOptionComboId, orgUnitId ) => {
     const dataSets = JSON.parse(JSON.stringify(workflow.dataSets));
     if( dataSets.length > 0 ) {
         for( const dataSet of dataSets) {
             const categoryCombo = getAttributeComboById(metadata, dataSet.categoryCombo.id)
             const foundAttrOptionCombo = categoryCombo.categoryOptionCombos.find((optionCombo => optionCombo.id === attributeOptionComboId))
             if(foundAttrOptionCombo) {
-                return foundAttrOptionCombo
+                const foundCategoryOptions = foundAttrOptionCombo.categoryOptions.filter(
+                    (categoryOption) =>
+                        isOptionAssignedToOrgUnit({
+                            categoryOption,
+                            orgUnitId,
+                        })
+                );
+                
+                if( foundCategoryOptions.length === foundAttrOptionCombo.categoryOptions)
+                {
+                    return foundAttrOptionCombo
+                }
             }
         }
     }
@@ -141,4 +152,13 @@ const checkCategoryComboAndDataSetAssigned = (metadata, dataSet) => {
     
     // return categoryCombo
     return true
+}
+
+
+export const isOptionAssignedToOrgUnit = ({ categoryOption, orgUnitId }) => {
+    // by default,
+    if (!categoryOption?.organisationUnits?.length) {
+        return true;
+    }
+    return categoryOption?.organisationUnits.includes(orgUnitId);
 }

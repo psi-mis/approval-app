@@ -11,6 +11,7 @@ import PropTypes from 'prop-types'
 import React, { useState, useEffect } from 'react'
 import { areListsEqual, cloneJSON } from '../../utils/array-utils.js'
 import css from './category-option-select.module.css'
+import { isOptionAssignedToOrgUnit } from '../../utils/caterogy-combo-utils.js'
 
 /**
  * 
@@ -222,12 +223,3 @@ const getCategoriesWithOptionsWithinOrgUnit = (categoryCombo, orgUnitId) => {
     return result;
 }
 
-
-
-const isOptionAssignedToOrgUnit = ({ categoryOption, orgUnitId }) => {
-    // by default,
-    if (!categoryOption?.organisationUnits?.length) {
-        return true;
-    }
-    return categoryOption?.organisationUnits.includes(orgUnitId);
-}

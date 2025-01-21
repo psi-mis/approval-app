@@ -2,9 +2,9 @@ import PropTypes from 'prop-types'
 import React, { useEffect, useReducer } from 'react'
 import { useAppContext } from '../app-context/index.js'
 import { pushStateToHistory } from '../navigation/index.js'
+import { getAttributeOptionComboIdExistInWorkflow } from '../utils/caterogy-combo-utils.js'
 import { initialValues, initialWorkflowValue } from './initial-values.js'
 import { SelectionContext } from './selection-context.js'
-import { getAttributeOptionComboIdExistInWorkflow } from '../utils/caterogy-combo-utils.js'
 
 const ACTIONS = {
     SET_OPENED_SELECT: 'SET_OPENED_SELECT',
@@ -44,7 +44,7 @@ const reducer = (state, { type, payload }) => {
                         ? state.period
                         : null,
                 attributeOptionCombo: state.attributeOptionCombo
-                    ? getAttributeOptionComboIdExistInWorkflow(payload.metadata, state.workflow, state.attributeOptionCombo?.id)
+                    ? getAttributeOptionComboIdExistInWorkflow(payload.metadata, state.workflow, state.attributeOptionCombo?.id, state.orgUnit?.id)
                     : null,
                 dataSet: null,
             }
