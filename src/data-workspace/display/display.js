@@ -69,7 +69,7 @@ const Display = ({ dataSetId }) => {
         )
     }
 
-    if (!dataSetId) {
+    if (!dataSetId && dataSets.length > 1) {
         return (
             <div className={styles.chooseDataSet}>
                 <h2>{i18n.t('Choose a data set to review')}</h2>
