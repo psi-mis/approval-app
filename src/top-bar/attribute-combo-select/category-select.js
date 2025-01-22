@@ -1,13 +1,14 @@
 import i18n from '@dhis2/d2-i18n'
 import {
-    Button
+    Button,
+    NoticeBox
 } from '@dhis2/ui'
 import PropTypes from 'prop-types'
 import React, { useState, useEffect } from 'react'
 import { areListsEqual, cloneJSON } from '../../utils/array-utils.js'
 import css from './category-option-select.module.css'
 import MultipleCategoySelect from './multiple-category-select.js'
-import SingleCategoryMenu from './single-category-menu.js'
+import SingleCategoryMenu from './single-category-select.js'
 
 /**
  * 
@@ -18,7 +19,7 @@ import SingleCategoryMenu from './single-category-menu.js'
  * @param onClose A function to close the menu.
  * 
  */
-export default function CategoyOptionSelect({
+export default function CategoySelect({
     categoryCombo,
     selected,
     onChange,
@@ -80,25 +81,62 @@ export default function CategoyOptionSelect({
         return;
     }
     
+    const renderHideButton = () => {
+        return ( <Button
+            secondary
+            className={css.hideButton}
+            onClick={(_, evt) => {
+                // required as otherwise it'd trigger a `setOpen(true)` call as
+                // react thinks of this dropdown as being inside of the
+                // selector. A click on the selector opens the menu.
+                evt.stopPropagation()
+                onClose()
+            }}
+        >
+            {i18n.t('Hide menu')}
+        </Button>)
+    }
     const categories = categoryCombo.categories
 
     // Checks if there's exactly one category in the categories array and that category has at least one categoryOption
     if (categories.length === 1 ) {
         // Extracts the single category from the categories array
         const category = categories[0]
+        if( categories[0].categoryOptions?.length === 0 ){
+            return(<> 
+                <NoticeBox
+                    className={css.noOptionsBox}
+                    error
+                    title={i18n.t('No available options')}
+                >
+                    {i18n.t(
+                        `There are no options for {{categoryName}} for the selected period or organisation unit.`,
+                        { categoryName: category.displayName }
+                    )}
+                </NoticeBox> 
+                
+                {renderHideButton()}
+                
+            </>)
+        }
+        
         if( categories[0].categoryOptions?.length > 1 ){
             // Renders a MenuSelect for the single category with more than one category options
             return (
-                <SingleCategoryMenu
-                    category={category}
-                    selected={selectedItem}
-                    onChange={categoryItemOnChange}
-                />
-            )
+                <>
+                    <SingleCategoryMenu
+                        category={category}
+                        selected={selectedItem}
+                        onChange={categoryItemOnChange}
+                    />
+                
+                    {renderHideButton()}
+                    
+                </>)
         }
         
         // The attribute option combo is selected automatically in AttributeComboSelect component and we don't need to render any UI here.
-        return null
+        return renderHideButton()
     }
 
     
@@ -110,24 +148,12 @@ export default function CategoyOptionSelect({
                 onChange={categoryItemOnChange}
             />
             
-            <Button
-                secondary
-                className={css.hideButton}
-                onClick={(_, evt) => {
-                    // required as otherwise it'd trigger a `setOpen(true)` call as
-                    // react thinks of this dropdown as being inside of the
-                    // selector. A click on the selector opens the menu.
-                    evt.stopPropagation()
-                    onClose()
-                }}
-            >
-                {i18n.t('Hide menu')}
-            </Button>
+           {renderHideButton()}
         </div>
     )
 }
 
-CategoyOptionSelect.propTypes = {
+CategoySelect.propTypes = {
     categoryCombo: PropTypes.shape({
         categories: PropTypes.arrayOf(
             PropTypes.shape({

@@ -63,7 +63,10 @@ const reducer = (state, { type, payload }) => {
             return {
                 ...state,
                 openedSelect: '',
-                orgUnit: payload.orgUnit,
+                orgUnit: payload.orgUnit, 
+                attributeOptionCombo: state.attributeOptionCombo
+                    ? getAttributeOptionComboIdExistInWorkflow(payload.metadata, state.workflow, state.attributeOptionCombo?.id, payload.orgUnit?.id)
+                    : null,
                 dataSet: null,
             }
         case ACTIONS.SELECT_CAT_OPTION_COMBO:
@@ -121,7 +124,7 @@ const SelectionProvider = ({ children }) => {
         selectPeriod: (period) =>
             dispatch({ type: ACTIONS.SELECT_PERIOD, payload: { period } }),
         selectOrgUnit: (orgUnit) =>
-            dispatch({ type: ACTIONS.SELECT_ORG_UNIT, payload: { orgUnit } }),
+            dispatch({ type: ACTIONS.SELECT_ORG_UNIT, payload: { metadata, orgUnit } }),
         selectAttributeOptionCombo: (attributeOptionCombo) =>
             dispatch({ type: ACTIONS.SELECT_CAT_OPTION_COMBO, payload: { attributeOptionCombo } }),
         selectDataSet: (dataSet) =>

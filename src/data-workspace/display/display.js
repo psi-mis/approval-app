@@ -9,7 +9,7 @@ import {
     getFixedPeriodsForTypeAndDateRange,
     RetryButton,
 } from '../../shared/index.js'
-import { getDataSetReportFilter } from '../../utils/caterogy-combo-utils.js'
+import { filterDataSetsByAttributeOptionComboAndOrgUnit, getDataSetReportFilter } from '../../utils/caterogy-combo-utils.js'
 import styles from './display.module.css'
 import { TableCustomDataSet } from './table-custom-data-set.js'
 import { Table } from './table.js'
@@ -32,7 +32,7 @@ const Display = ({ dataSetId }) => {
     const { metadata } = useAppContext()
     const selection = useSelectionContext()
     const { orgUnit, workflow, period, attributeOptionCombo } = selection
-    const { dataSets } = workflow
+    const dataSets = filterDataSetsByAttributeOptionComboAndOrgUnit(metadata, workflow, orgUnit, attributeOptionCombo)
     const selectedDataSet = dataSets.find(({ id }) => id === dataSetId)
     const periodIds = selectedDataSet
         ? getFixedPeriodsForTypeAndDateRange(
@@ -64,7 +64,7 @@ const Display = ({ dataSetId }) => {
     if (!dataSets || dataSets.length === 0) {
         return (
             <div className={styles.noData}>
-                <p>{i18n.t('This workflow, the organisation unit and the category option combo does not contain any data sets.')}</p>
+                 <p>{i18n.t('This workflow, the organisation unit and the category option combo does not contain any data sets.')}</p>
             </div>
         )
     }

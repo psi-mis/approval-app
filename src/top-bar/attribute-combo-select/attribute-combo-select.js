@@ -7,7 +7,7 @@ import { findObject } from '../../utils/array-utils.js'
 import { getCategoryComboByCategoryOptionCombo, getCategoryCombosByWorkflowAndOrgUnit, getCategoryOptionComboById, getCategoryOptionsByCategoryOptionCombo } from '../../utils/caterogy-combo-utils.js'
 import { ContextSelect } from '../context-select/context-select.js'
 import css from './attribute-combo-select.module.css'
-import CategoyOptionSelect from './category-option-select.js'
+import CategoySelect from './category-select.js'
 
 
 const CAT_OPTION_COMBO = 'CAT_OPTION_COMBO';
@@ -63,13 +63,13 @@ const AttributeComboSelect = () => {
     useEffect(() => {
         // Fetch and set the category combos
         const _attributeCombos = getCategoryCombosByWorkflowAndOrgUnit(metadata, workflow, orgUnit)
+        console.log("===== metadata : ", metadata)
+        console.log("orgUnit : ", orgUnit)
+        console.log("_attributeCombos : ", _attributeCombos)
         setAttributeCombos(_attributeCombos)
         
         let _attributeCombo = null
         let _attributeOptionCombo = null
-        
-        // // Reset selected attribute option combo
-        // selectAttributeOptionCombo(null)
     
         let isShowAttributeComboVisible = true;
         let attributeComboValue = i18n.t('0 selections')
@@ -97,7 +97,6 @@ const AttributeComboSelect = () => {
         }
         else {
             _attributeOptionCombo = null
-            // setSelectedAttributeCombo(null)
         }
         
         // Update states only if values have changed
@@ -105,7 +104,7 @@ const AttributeComboSelect = () => {
         selectAttributeOptionCombo(_attributeOptionCombo);
         setShowed((prev) => (prev !== isShowAttributeComboVisible ? isShowAttributeComboVisible : prev));
         setAttrComboValue((prev) => (prev !== attributeComboValue ? attributeComboValue : prev));
-    }, [workflow]);
+    }, [workflow, orgUnit]);
     
     const onChange = (selectedAttrCombo, selectedCategoryItems, selectedAttrOptionCombo) => {
         selectAttributeOptionCombo(selectedAttrOptionCombo)
@@ -195,7 +194,7 @@ const AttributeComboSelect = () => {
                     </div>}
                 
                     {selectedAttributeCombo && (!selectedAttributeCombo.isDefault ) &&
-                        <CategoyOptionSelect
+                        <CategoySelect
                             key={`catCombo_${selectedAttributeCombo?.id}_${orgUnit?.id}`}
                             categoryCombo={selectedAttributeCombo}
                             // orgUnit={orgUnit}

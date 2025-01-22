@@ -1,3 +1,4 @@
+import { cloneJSON } from "./array-utils.js";
 import { isDateAGreaterThanDateB, isDateALessThanDateB } from "./date-utils.js";
 
 export const getCategoryCombosByWorkflowAndOrgUnit = (metadata, workflow, orgUnit) => {
@@ -5,7 +6,7 @@ export const getCategoryCombosByWorkflowAndOrgUnit = (metadata, workflow, orgUni
     
     // Filter category options by orgunit
     if( categoryComboList.length > 0 ) {
-        categoryComboList.map((categoryCombo) => filterCategoryOptionsByOrgUnit(categoryCombo, orgUnit?.id))
+        categoryComboList.map((categoryCombo) => categoryCombo.categories = filterCategoryOptionsByOrgUnit(categoryCombo, orgUnit?.id))
     }
     
     return categoryComboList
@@ -17,11 +18,11 @@ const extractCategoryCombosByWorkflow = (metadata, workflow) => {
         categoryComboList = []
     }
     else if (workflow.dataSets) {
-        const dataSets = JSON.parse(JSON.stringify(workflow.dataSets))
+        const dataSets = workflow.dataSets
         for( const dataSet of dataSets) {
             const valid = verifyCategoryComboAssignment(metadata, dataSet)
             if(valid) {
-                const attributeCombo = getAttributeComboById(metadata, dataSet.categoryCombo.id)
+                const attributeCombo = cloneJSON(getAttributeComboById(metadata, dataSet.categoryCombo.id))
                 categoryComboList.push(attributeCombo)
             }
         }
@@ -35,7 +36,7 @@ const extractCategoryCombosByWorkflow = (metadata, workflow) => {
         )
     } 
     
-    return categoryComboList
+    return cloneJSON(categoryComboList)
 }
 
 const filterCategoryOptionsByOrgUnit = (categoryCombo, orgUnitId) => {
@@ -152,7 +153,7 @@ export const filterDataSetsByAttributeOptionComboAndOrgUnit = (metadata, workflo
     const result = [];
     
     if( attributeOptionCombo ) {
-        const dataSets = workflow?.dataSets
+        const dataSets = cloneJSON(workflow?.dataSets)
         for( const dataSet of dataSets ) {
             const catCombo = getAttributeComboById(metadata, dataSet.categoryCombo.id)
             // Check if the data set assigned to "attributeOptionCombo"
@@ -196,7 +197,8 @@ export const isOptionAssignedToOrgUnit = ({ categoryOption, orgUnitId }) => {
     if (!categoryOption?.organisationUnits?.length) {
         return true;
     }
-    return categoryOption?.organisationUnits.includes(orgUnitId);
+    
+    return categoryOption?.organisationUnits.filter(catOptionOrgUnit => catOptionOrgUnit.id === orgUnitId).length > 0
 }
 
 export const isOptionWithinPeriod = ({

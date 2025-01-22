@@ -2,7 +2,7 @@ import i18n from '@dhis2/d2-i18n'
 import { Menu, MenuItem } from "@dhis2/ui"
 import PropTypes from "prop-types"
 import React, { useEffect, useState } from 'react'
-import css from './single-category-menu.module.css'
+import css from './single-category-select.module.css'
 
 export default function SingleCategoryMenu({
     category,
@@ -25,7 +25,7 @@ export default function SingleCategoryMenu({
     return (
         <> 
             {/* Search Input */}
-            <div className={css.inputContainer}>
+            {filteredCategoryOptions.length > 4 && <div className={css.inputContainer}>
                 <input
                     type="text"
                     placeholder={i18n.t('Search for {{categoryName}}', {
@@ -36,7 +36,7 @@ export default function SingleCategoryMenu({
                     onChange={(e) => setSearchQuery(e.target.value)}
                     className={css.searchInput} // Add appropriate styling here
                 />
-            </div>
+            </div> }
             
             <Menu className={css.menu}>
                 {filteredCategoryOptions.map((catOption) => (
