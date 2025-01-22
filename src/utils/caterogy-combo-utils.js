@@ -1,12 +1,25 @@
-export const getCategoryCombos = (metadata, workflow) => {
+import { isDateAGreaterThanDateB, isDateALessThanDateB } from "./date-utils.js";
+
+export const getCategoryCombosByWorkflowAndOrgUnit = (metadata, workflow, orgUnit) => {
+    const categoryComboList = extractCategoryCombosByWorkflow(metadata, workflow)
+    
+    // Filter category options by orgunit
+    if( categoryComboList.length > 0 ) {
+        categoryComboList.map((categoryCombo) => filterCategoryOptionsByOrgUnit(categoryCombo, orgUnit?.id))
+    }
+    
+    return categoryComboList
+}
+
+const extractCategoryCombosByWorkflow = (metadata, workflow) => {
     let categoryComboList = [];
     if(workflow === null || !workflow.dataSets || workflow.dataSets.length == 0 ) {
         categoryComboList = []
     }
     else if (workflow.dataSets) {
-        const dataSets = JSON.parse(JSON.stringify(workflow.dataSets));
+        const dataSets = JSON.parse(JSON.stringify(workflow.dataSets))
         for( const dataSet of dataSets) {
-            const valid = checkCategoryComboAndDataSetAssigned(metadata, dataSet)
+            const valid = verifyCategoryComboAssignment(metadata, dataSet)
             if(valid) {
                 const attributeCombo = getAttributeComboById(metadata, dataSet.categoryCombo.id)
                 categoryComboList.push(attributeCombo)
@@ -19,10 +32,30 @@ export const getCategoryCombos = (metadata, workflow) => {
               acc[categoryCombo.id] = categoryCombo // Use the `id` as the key to ensure uniqueness
               return acc
             }, {})
-        );
-    }  
+        )
+    } 
     
     return categoryComboList
+}
+
+const filterCategoryOptionsByOrgUnit = (categoryCombo, orgUnitId) => {
+    if (!categoryCombo || !orgUnitId) {
+        return []
+    }
+    
+    const categories = categoryCombo.categories
+    const result = (categories || []).map((category) => ({
+        ...category,
+        categoryOptions: category.categoryOptions.filter(
+            (categoryOption) =>
+                isOptionAssignedToOrgUnit({
+                    categoryOption,
+                    orgUnitId,
+                })
+        ),
+    }));
+    
+    return result;
 }
 
 export const getAttributeComboById = (metadata, attributeComboById) => {
@@ -115,15 +148,18 @@ export const getDataSetReportFilter = (metadata, attributeOptionCombo) => {
     return
 }
 
-export const getDataSetsInWorkflowByAttributeOptionCombo = (metadata, workflow, attributeOptionCombo) => {
+export const filterDataSetsByAttributeOptionComboAndOrgUnit = (metadata, workflow, orgUnit, attributeOptionCombo) => {
     const result = [];
     
     if( attributeOptionCombo ) {
         const dataSets = workflow?.dataSets
         for( const dataSet of dataSets ) {
             const catCombo = getAttributeComboById(metadata, dataSet.categoryCombo.id)
-            const found = catCombo.categoryOptionCombos.find((dsCatOptionCombo => dsCatOptionCombo.id === attributeOptionCombo.id))
-            if( found ) {
+            // Check if the data set assigned to "attributeOptionCombo"
+            const checkAttrOptionCombo = catCombo.categoryOptionCombos.find((dsCatOptionCombo => dsCatOptionCombo.id === attributeOptionCombo.id))
+            // Check if the data set assigned to "orgUnit"
+            const checkOrgunit = dataSet.organisationUnits.find((dsOrgUnit => dsOrgUnit.id === orgUnit.id))
+            if( checkAttrOptionCombo && checkOrgunit ) {
                 result.push(dataSet)
             }
         }
@@ -136,7 +172,7 @@ export const getDataSetsInWorkflowByAttributeOptionCombo = (metadata, workflow, 
  * @param {*} metadata
  * @param {*} dataSet
  */
-const checkCategoryComboAndDataSetAssigned = (metadata, dataSet) => {
+const verifyCategoryComboAssignment = (metadata, dataSet) => {
     const categoryCombos = metadata?.categoryCombos
     
     if (!dataSet.categoryCombo?.id) {
@@ -161,4 +197,59 @@ export const isOptionAssignedToOrgUnit = ({ categoryOption, orgUnitId }) => {
         return true;
     }
     return categoryOption?.organisationUnits.includes(orgUnitId);
+}
+
+export const isOptionWithinPeriod = ({
+    periodStartDate,
+    periodEndDate,
+    categoryOption,
+    calendar = 'gregory',
+}) => {
+      // option has not start and end dates
+      if (!categoryOption.startDate && !categoryOption.endDate) {
+        return true
+    }
+
+    // dates are all server dates so we can ignore time zone adjustment
+    // use string comparison for time being to better handle non-gregory dates
+    // date comparison
+
+    if (categoryOption.startDate) {
+        const categoryOptionStartDate = categoryOption.startDate
+        if (
+            // date comparison (periodStartDate: system calendar, categoryOptionStartDate: ISO)
+            isDateALessThanDateB(
+                { date: periodStartDate, calendar },
+                { date: categoryOptionStartDate, calendar: 'gregory' },
+                {
+                    calendar,
+                    inclusive: false,
+                }
+            )
+        ) {
+            // option start date is after period start date
+            return false
+        }
+    }
+
+    if (categoryOption.endDate) {
+        const categoryOptionEndDate = categoryOption.endDate
+        // date comparison (periodEndDate: system calendar, categoryOptionEndDate: ISO)
+        if (
+            isDateAGreaterThanDateB(
+                { date: periodEndDate, calendar },
+                { date: categoryOptionEndDate, calendar: 'gregory' },
+                {
+                    calendar,
+                    inclusive: false,
+                }
+            )
+        ) {
+            // option end date is before period end date
+            return false
+        }
+    }
+
+    // option spans over entire period
+    return true
 }

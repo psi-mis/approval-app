@@ -1,12 +1,12 @@
 import { useMemo } from 'react'
-import { useSelectionContext } from '../../selection-context/index.js'
-import { getDataSetsInWorkflowByAttributeOptionCombo } from '../../utils/caterogy-combo-utils.js'
 import { useAppContext } from '../../app-context/use-app-context.js'
+import { useSelectionContext } from '../../selection-context/index.js'
+import { filterDataSetsByAttributeOptionComboAndOrgUnit } from '../../utils/caterogy-combo-utils.js'
 
 export const useSelectedDataSet = () => {
     const { metadata } = useAppContext()
-    const { workflow, dataSet, attributeOptionCombo} = useSelectionContext()
-    const availableDataSets = getDataSetsInWorkflowByAttributeOptionCombo(metadata, workflow, attributeOptionCombo)
+    const { workflow, dataSet, orgUnit, attributeOptionCombo} = useSelectionContext()
+    const availableDataSets = filterDataSetsByAttributeOptionComboAndOrgUnit(metadata, workflow, orgUnit, attributeOptionCombo)
     
     return useMemo(() => {
         const dataSets = (!attributeOptionCombo) ? workflow?.dataSets : availableDataSets

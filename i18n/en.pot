@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2025-01-21T15:01:24.044Z\n"
-"PO-Revision-Date: 2025-01-21T15:01:24.045Z\n"
+"POT-Creation-Date: 2025-01-22T06:45:42.975Z\n"
+"PO-Revision-Date: 2025-01-22T06:45:42.975Z\n"
 
 msgid "Not authorized"
 msgstr "Not authorized"
@@ -253,6 +253,9 @@ msgstr "Choose a category option combo"
 msgid "Choose a combination"
 msgstr "Choose a combination"
 
+msgid "Hide menu"
+msgstr "Hide menu"
+
 msgid "No available options"
 msgstr "No available options"
 
@@ -263,8 +266,8 @@ msgstr ""
 "There are no options for {{categoryName}} for the selected period or "
 "organisation unit."
 
-msgid "Hide menu"
-msgstr "Hide menu"
+msgid "Search for {{categoryName}}"
+msgstr "Search for {{categoryName}}"
 
 msgid "Clear selections"
 msgstr "Clear selections"

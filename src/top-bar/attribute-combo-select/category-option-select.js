@@ -1,30 +1,25 @@
 import i18n from '@dhis2/d2-i18n'
 import {
-    Button,
-    Menu,
-    MenuItem,
-    NoticeBox,
-    SingleSelectField,
-    SingleSelectOption,
+    Button
 } from '@dhis2/ui'
 import PropTypes from 'prop-types'
 import React, { useState, useEffect } from 'react'
 import { areListsEqual, cloneJSON } from '../../utils/array-utils.js'
 import css from './category-option-select.module.css'
-import { isOptionAssignedToOrgUnit } from '../../utils/caterogy-combo-utils.js'
+import MultipleCategoySelect from './multiple-category-select.js'
+import SingleCategoryMenu from './single-category-menu.js'
 
 /**
  * 
  * @param categoryCombo An object which has an array of category objects (JSON), each options (to be rendered in a menu).
  * @param orgUnit An object
- * @param selected {<categoryId_1>: <catOptionId_1>, <categoryId_2>: <catOptionId_2>, ...}
+ * @param selected {<attribute option combo>}
  * @param onChange A function to handle changes in the selected options.
  * @param onClose A function to close the menu.
  * 
  */
 export default function CategoyOptionSelect({
     categoryCombo,
-    orgUnit,
     selected,
     onChange,
     onClose,
@@ -32,11 +27,11 @@ export default function CategoyOptionSelect({
     const [selectedItem, setSelectedItem] = useState({})
     
     // Get the selected categories if any
-    const getSelectedCategories = () => {
-        const initCategories = {}
+    const mapSelectedCategories = () => {
+        const categoryMap = {}
         
         if (!selected) {
-            return initCategories
+            return categoryMap
         }
         
         const catOptionIds = selected.categoryOptions.map((item => item.id))
@@ -45,15 +40,15 @@ export default function CategoyOptionSelect({
             const category = categoryCombo.categories[j]
             const foundCatOptions = category.categoryOptions.filter((item => catOptionIds.includes(item.id)))
             if( foundCatOptions.length > 0 ) {
-                initCategories[category.id] = foundCatOptions[0].id
+                categoryMap[category.id] = foundCatOptions[0].id
             }
         }
         
-        return initCategories
+        return categoryMap
     }
     
     useEffect(() => {
-        setSelectedItem(getSelectedCategories())
+        setSelectedItem(mapSelectedCategories())
     }, [])
     
     
@@ -85,68 +80,35 @@ export default function CategoyOptionSelect({
         return;
     }
     
+    const categories = categoryCombo.categories
+
     // Checks if there's exactly one category in the categories array and that category has at least one categoryOption
-    const categories = getCategoriesWithOptionsWithinOrgUnit(categoryCombo, orgUnit?.id);
-    if (categories.length === 1 && categories[0].categoryOptions?.length > 0) {
+    if (categories.length === 1 ) {
         // Extracts the single category from the categories array
         const category = categories[0]
-        // Renders a MenuSelect for the single category
-        return (
-            <Menu className={css.menu}>
-                {category.categoryOptions.map((catOption) => (
-                    <MenuItem
-                        key={`${categoryCombo.id}-${catOption.id}`}
-                        className={css.bordered}
-                        active={selectedItem[category.id] === catOption.id}
-                        onClick={() => categoryItemOnChange(category.id, catOption.id)}
-                        label={<span data-value={catOption.id}>{catOption.displayName}</span>}
-                    />
-                ))}
-            </Menu>
-           
-        )
+        if( categories[0].categoryOptions?.length > 1 ){
+            // Renders a MenuSelect for the single category with more than one category options
+            return (
+                <SingleCategoryMenu
+                    category={category}
+                    selected={selectedItem}
+                    onChange={categoryItemOnChange}
+                />
+            )
+        }
+        
+        // The attribute option combo is selected automatically in AttributeComboSelect component and we don't need to render any UI here.
+        return null
     }
 
     
     return (
         <div className={css.container}>
-            <div className={css.inputs}>
-                
-                {/* Categories Dropdown */}
-                {categories.map(({ id, displayName, categoryOptions }) => 
-                    categoryOptions.length === 0 ? (
-                        <NoticeBox
-                            className={css.noOptionsBox}
-                            error
-                            title={i18n.t('No available options')}
-                        >
-                            {i18n.t(
-                                `There are no options for {{categoryName}} for the selected period or organisation unit.`,
-                                { categoryName: displayName }
-                            )}
-                        </NoticeBox>
-                    ) : (
-                        // Renders a SingleSelectField for each category
-                        <div className={css.inputWrapper} key={id}>
-                            <SingleSelectField
-                                label={displayName} // The category's displayName.
-                                selected={selectedItem[id]} // Current selected option ID.
-                                onChange={({ selected }) => categoryItemOnChange(id, selected)}
-                            >
-                                {categoryOptions.map(({ id, displayName }) => (
-                                    <SingleSelectOption
-                                        key={id}
-                                        value={id}
-                                        label={displayName}
-                                        className={css.dropdown}
-                                    />
-                                ))}
-                            </SingleSelectField>
-                        </div>
-                    )
-                )}
-               
-            </div>
+            <MultipleCategoySelect
+                categories={categories}
+                selected={selectedItem}
+                onChange={categoryItemOnChange}
+            />
             
             <Button
                 secondary
@@ -156,13 +118,11 @@ export default function CategoyOptionSelect({
                     // react thinks of this dropdown as being inside of the
                     // selector. A click on the selector opens the menu.
                     evt.stopPropagation()
-
                     onClose()
                 }}
             >
                 {i18n.t('Hide menu')}
             </Button>
-            
         </div>
     )
 }
@@ -196,30 +156,7 @@ CategoyOptionSelect.propTypes = {
         id: PropTypes.string.isRequired,
     }).isRequired,
     
-    orgUnit: PropTypes.object.isRequired,
     onChange: PropTypes.func.isRequired,
     onClose: PropTypes.func.isRequired,
     selected: PropTypes.object,
 }
-
-
-const getCategoriesWithOptionsWithinOrgUnit = (categoryCombo, orgUnitId) => {
-    if (!categoryCombo || !orgUnitId) {
-        return []
-    }
-    
-    const categories = categoryCombo.categories
-    const result = (categories || []).map((category) => ({
-        ...category,
-        categoryOptions: category.categoryOptions.filter(
-            (categoryOption) =>
-                isOptionAssignedToOrgUnit({
-                    categoryOption,
-                    orgUnitId,
-                })
-        ),
-    }));
-    
-    return result;
-}
-

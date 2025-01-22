@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react'
 import { useAppContext } from '../../app-context/use-app-context.js'
 import { useSelectionContext } from '../../selection-context/index.js'
 import { findObject } from '../../utils/array-utils.js'
-import { getCategoryComboByCategoryOptionCombo, getCategoryCombos, getCategoryOptionComboById, getCategoryOptionsByCategoryOptionCombo } from '../../utils/caterogy-combo-utils.js'
+import { getCategoryComboByCategoryOptionCombo, getCategoryCombosByWorkflowAndOrgUnit, getCategoryOptionComboById, getCategoryOptionsByCategoryOptionCombo } from '../../utils/caterogy-combo-utils.js'
 import { ContextSelect } from '../context-select/context-select.js'
 import css from './attribute-combo-select.module.css'
 import CategoyOptionSelect from './category-option-select.js'
@@ -47,11 +47,9 @@ const AttributeComboSelect = () => {
     
     const handleSingleCategoryCombo = (_attributeCombos) => {
         const singleCategoryCombo = _attributeCombos[0];
-        // setSelectedAttributeCombo(singleCategoryCombo);
     
         if (singleCategoryCombo.categoryOptionCombos.length === 1) {
             const defaultOptionCombo = singleCategoryCombo.categoryOptionCombos[0];
-            // selectAttributeOptionCombo(defaultOptionCombo);
             return { isVisible: false, value: i18n.t('1 selection'), attributeCombo: singleCategoryCombo, attributeOptionCombo: defaultOptionCombo };
         }
     
@@ -64,8 +62,9 @@ const AttributeComboSelect = () => {
     
     useEffect(() => {
         // Fetch and set the category combos
-        const _attributeCombos = getCategoryCombos(metadata, workflow)
+        const _attributeCombos = getCategoryCombosByWorkflowAndOrgUnit(metadata, workflow, orgUnit)
         setAttributeCombos(_attributeCombos)
+        
         let _attributeCombo = null
         let _attributeOptionCombo = null
         
@@ -147,16 +146,19 @@ const AttributeComboSelect = () => {
         
         // Update the selected attribute combo and reset attribute combo value
         setSelectedAttributeCombo(catCombo)
-        setAttrComboValue(i18n.t('0 selections'))
         
         // Automatically select the default option combo if applicable
-        if( catCombo.isDefault ) {
+        if( catCombo.isDefault || (catCombo.categories.length === 1 && catCombo.categories[0].categoryOptions.length === 1) ) {
             selectAttributeOptionCombo(catCombo.categoryOptionCombos[0])
+            setAttrComboValue(i18n.t('1 selection'))
+        }
+        else {
+            setAttrComboValue(i18n.t('0 selections'))
         }
     }
     
     if (!workflow || Object.keys(workflow).length < 0) {
-        return null; // Renders nothing
+        return null // Renders nothing
     }
     
     return (
@@ -196,7 +198,7 @@ const AttributeComboSelect = () => {
                         <CategoyOptionSelect
                             key={`catCombo_${selectedAttributeCombo?.id}_${orgUnit?.id}`}
                             categoryCombo={selectedAttributeCombo}
-                            orgUnit={orgUnit}
+                            // orgUnit={orgUnit}
                             selected={attributeOptionCombo}
                             onChange={onChange}
                             onClose={() => setOpenedSelect('')}

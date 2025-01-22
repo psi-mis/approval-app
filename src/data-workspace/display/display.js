@@ -64,7 +64,7 @@ const Display = ({ dataSetId }) => {
     if (!dataSets || dataSets.length === 0) {
         return (
             <div className={styles.noData}>
-                <p>{i18n.t('This workflow does not contain any data sets.')}</p>
+                <p>{i18n.t('This workflow, the organisation unit and the category option combo does not contain any data sets.')}</p>
             </div>
         )
     }

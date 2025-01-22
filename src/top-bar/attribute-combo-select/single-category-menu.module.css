@@ -1,0 +1,19 @@
+/* Center the container */
+.inputContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-left: 8px;
+    margin-top: 4px;
+    margin-right: 8px;
+}
+
+/* Style the input */
+.searchInput {
+    width: 100%;
+    max-width: 400px;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-shadow: none;
+}
