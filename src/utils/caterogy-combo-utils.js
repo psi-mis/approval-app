@@ -193,7 +193,7 @@ const verifyCategoryComboAssignment = (metadata, dataSet) => {
 
 
 export const isOptionAssignedToOrgUnit = ({ categoryOption, orgUnitId }) => {
-    // by default,
+    // by default, ...
     if (!categoryOption?.organisationUnits?.length) {
         return true;
     }

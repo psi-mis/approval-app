@@ -18,8 +18,13 @@ const AttributeComboSelect = () => {
         
     const open = openedSelect === CAT_OPTION_COMBO
     const getMissingSelectionsMessage = () => {
-        if( !period ) return i18n.t('Choose a period first')
-        if( !orgUnit ) return i18n.t('Choose an organisation unit first')
+        if( !period ) {
+            return i18n.t('Choose a period first')
+        }
+        
+        if( !orgUnit ) {
+            return i18n.t('Choose an organisation unit first')
+        }
     } 
         
     const [attributeCombos, setAttributeCombos] = useState([])

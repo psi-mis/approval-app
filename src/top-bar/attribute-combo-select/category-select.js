@@ -98,7 +98,7 @@ export default function CategoySelect({
     }
     const categories = categoryCombo.categories
 
-    // Checks if there's exactly one category in the categories array and that category has at least one categoryOption
+    // Check if there's exactly one category in the categories array and that category has at least one categoryOption
     if (categories.length === 1 ) {
         // Extracts the single category from the categories array
         const category = categories[0]
