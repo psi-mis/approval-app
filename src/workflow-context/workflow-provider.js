@@ -5,7 +5,6 @@ import React, { useEffect } from 'react'
 import { useSelectionContext } from '../selection-context/index.js'
 import { ErrorMessage, Loader, RetryButton } from '../shared/index.js'
 import { WorkflowContext } from './workflow-context.js'
-import { useState } from 'react'
 
 const query = {
     approvalStatus: {

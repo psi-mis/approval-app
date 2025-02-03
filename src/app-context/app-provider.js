@@ -35,9 +35,8 @@ const query = {
                 'id',
                 'displayName',
                 'isDefault',
-                'categories[displayName,name,id,categoryOptions[id,displayName,name,organisationUnits[id]]]',
-                // 'categories[displayName,name,id,categoryOptions[id,displayName]]',
-                'categoryOptionCombos[id,displayName,categoryOptions]',
+                'categories[displayName,name,id,categoryOptions[id,displayName,name,startDate,endDate,organisationUnits[id]]]',
+                'categoryOptionCombos[id,displayName,categoryOptions[id,displayName,name,startDate,endDate,organisationUnits[id]]]',
             ],
         },
     }

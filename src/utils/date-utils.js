@@ -14,12 +14,18 @@ export const isDateAGreaterThanDateB = (
     return isDateALessThanDateB(dateB, dateA, { inclusive })
 }
 
-
+/**
+ * 
+ * isDateALessThanDateB({ date: '2024-01-02' }, { date: '2024-01-02' }, { inclusive: true } ) ==> Output: true
+ * isDateALessThanDateB({ date: '2024-01-02' },, {} ) ==> Output: false
+ * 
+ */
 export const isDateALessThanDateB = (
     { date: dateA, calendar: calendarA = 'gregory' } = {},
     { date: dateB, calendar: calendarB = 'gregory' } = {},
     { inclusive = false } = {}
 ) => {
+    // If either dateA or dateB is missing, return false immediately.
     if (!dateA || !dateB) {
         return false
     }

@@ -1,12 +1,15 @@
-import { cloneJSON } from "./array-utils.js";
+import { areListsEqual, cloneJSON } from "./array-utils.js";
 import { isDateAGreaterThanDateB, isDateALessThanDateB } from "./date-utils.js";
 
-export const getCategoryCombosByWorkflowAndOrgUnit = (metadata, workflow, orgUnit) => {
+export const getCategoryCombosByFilters = (metadata, workflow, orgUnit, period, calendar) => {
+    if(workflow == null || orgUnit == null || period == null ) return [];
+    
     const categoryComboList = extractCategoryCombosByWorkflow(metadata, workflow)
     
     // Filter category options by orgunit
     if( categoryComboList.length > 0 ) {
-        categoryComboList.map((categoryCombo) => categoryCombo.categories = filterCategoryOptionsByOrgUnit(categoryCombo, orgUnit?.id))
+        categoryComboList.map((categoryCombo) => categoryCombo.categories = filterCategoryOptionsByFilters(categoryCombo, orgUnit, period, calendar))
+        
     }
     
     return categoryComboList
@@ -39,10 +42,13 @@ const extractCategoryCombosByWorkflow = (metadata, workflow) => {
     return cloneJSON(categoryComboList)
 }
 
-const filterCategoryOptionsByOrgUnit = (categoryCombo, orgUnitId) => {
-    if (!categoryCombo || !orgUnitId) {
+const filterCategoryOptionsByFilters = (categoryCombo, orgUnit, period, calendar) => {
+    if (!categoryCombo || !orgUnit || !period) {
         return []
     }
+    
+    const periodStartDate = period.startDate
+    const periodEndDate = period.endDate
     
     const categories = categoryCombo.categories
     const result = (categories || []).map((category) => ({
@@ -51,7 +57,13 @@ const filterCategoryOptionsByOrgUnit = (categoryCombo, orgUnitId) => {
             (categoryOption) =>
                 isOptionAssignedToOrgUnit({
                     categoryOption,
-                    orgUnitId,
+                    orgUnit,
+                }) &&
+                isOptionWithinPeriod({
+                    periodStartDate,
+                    periodEndDate,
+                    categoryOption,
+                    calendar,
                 })
         ),
     }));
@@ -60,7 +72,7 @@ const filterCategoryOptionsByOrgUnit = (categoryCombo, orgUnitId) => {
 }
 
 export const getAttributeComboById = (metadata, attributeComboById) => {
-    return metadata.categoryCombos.find((item => item.id === attributeComboById))
+    return cloneJSON(metadata.categoryCombos.find((item => item.id === attributeComboById)))
 }
 
 export const getCategoryComboByCategoryOptionCombo = (metadata, categoryOptionComboId) => {
@@ -87,24 +99,24 @@ export const getCategoryOptionComboById = (metadata, categoryOptionComboId) => {
     return
 }
 
-export const getAttributeOptionComboIdExistInWorkflow = ( metadata, workflow, attributeOptionComboId, orgUnitId ) => {
+export const getAttributeOptionComboIdExistInWorkflow = ( metadata, workflow, attributeOptionComboId, orgUnit, period, calendar) => {
     const dataSets = JSON.parse(JSON.stringify(workflow.dataSets));
+    
+    const periodStartDate = period.startDate
+    const periodEndDate = period.endDate
+    
     if( dataSets.length > 0 ) {
         for( const dataSet of dataSets) {
             const categoryCombo = getAttributeComboById(metadata, dataSet.categoryCombo.id)
             const foundAttrOptionCombo = categoryCombo.categoryOptionCombos.find((optionCombo => optionCombo.id === attributeOptionComboId))
             if(foundAttrOptionCombo) {
-                const foundCategoryOptions = foundAttrOptionCombo.categoryOptions.filter(
-                    (categoryOption) =>
-                        isOptionAssignedToOrgUnit({
-                            categoryOption,
-                            orgUnitId,
-                        })
+                const foundCategoryOptions = foundAttrOptionCombo.categoryOptions.filter(categoryOption =>
+                    isOptionAssignedToOrgUnit({ categoryOption, orgUnit }) &&
+                    isOptionWithinPeriod({ periodStartDate, periodEndDate, categoryOption, calendar })
                 );
                 
-                if( foundCategoryOptions.length === foundAttrOptionCombo.categoryOptions)
-                {
-                    return foundAttrOptionCombo
+                if (foundCategoryOptions.length > 0) {
+                    return foundAttrOptionCombo;
                 }
             }
         }
@@ -192,13 +204,15 @@ const verifyCategoryComboAssignment = (metadata, dataSet) => {
 }
 
 
-export const isOptionAssignedToOrgUnit = ({ categoryOption, orgUnitId }) => {
+export const isOptionAssignedToOrgUnit = ({ categoryOption, orgUnit }) => {
     // by default, ...
     if (!categoryOption?.organisationUnits?.length) {
         return true;
     }
     
-    return categoryOption?.organisationUnits.filter(catOptionOrgUnit => catOptionOrgUnit.id === orgUnitId).length > 0
+    const found = categoryOption?.organisationUnits.filter(catOptionOrgUnit => orgUnit?.path.indexOf(catOptionOrgUnit.id)>=0)
+    
+    return found.length > 0
 }
 
 export const isOptionWithinPeriod = ({
@@ -207,51 +221,108 @@ export const isOptionWithinPeriod = ({
     categoryOption,
     calendar = 'gregory',
 }) => {
-      // option has not start and end dates
-      if (!categoryOption.startDate && !categoryOption.endDate) {
+    
+    const categoryOptionStartDate = categoryOption.startDate
+    const categoryOptionEndDate = categoryOption.endDate
+    
+    // option has not start and end dates
+    if (!categoryOption.startDate && !categoryOption.endDate) {
         return true
     }
+    
+    let startDateValid = true
+    let endDateValid = true 
+    
+    // catOption.startDate <= period.startDate
+    if(categoryOption.startDate) {
+        startDateValid = isDateALessThanDateB(
+                { date: categoryOptionStartDate, calendar: 'gregory' },
+                { date: periodStartDate, calendar },
+                {
+                    calendar,
+                    inclusive: true,
+                }
+            )
+    }
+    
+    // period.endDate<=catOption.endDate
+    if(categoryOption.endDate) {
+        endDateValid =  isDateALessThanDateB(
+            { date: periodEndDate, calendar },
+            { date: categoryOptionEndDate, calendar: 'gregory' },
+            {
+                calendar,
+                inclusive: true,
+            }
+        )
+    }
+    
+    return startDateValid && endDateValid
 
     // dates are all server dates so we can ignore time zone adjustment
     // use string comparison for time being to better handle non-gregory dates
     // date comparison
 
-    if (categoryOption.startDate) {
-        const categoryOptionStartDate = categoryOption.startDate
-        if (
-            // date comparison (periodStartDate: system calendar, categoryOptionStartDate: ISO)
-            isDateALessThanDateB(
-                { date: periodStartDate, calendar },
-                { date: categoryOptionStartDate, calendar: 'gregory' },
-                {
-                    calendar,
-                    inclusive: false,
-                }
-            )
-        ) {
-            // option start date is after period start date
-            return false
+    // if (categoryOption.startDate) {
+    //     const categoryOptionStartDate = categoryOption.startDate
+    //     if (
+    //         // date comparison (periodStartDate: system calendar, categoryOptionStartDate: ISO)
+    //         // check if the the selected "period"'s startDate less then "categoryOption"'s startDate
+    //         //  ==> return the "categoryOption" is invalid
+    //         isDateALessThanDateB(
+    //             { date: periodStartDate, calendar },
+    //             { date: categoryOptionStartDate, calendar: 'gregory' },
+    //             {
+    //                 calendar,
+    //                 inclusive: false,
+    //             }
+    //         )
+    //     ) {
+    //         // option start date is after period start date
+    //         return false
+    //     }
+    // }
+
+    // if (categoryOption.endDate) {
+    //     const categoryOptionEndDate = categoryOption.endDate
+    //     // date comparison (periodEndDate: system calendar, categoryOptionEndDate: ISO)
+    //     // check if the the selected "period"'s endDate greater then "categoryOption"'s endDate
+    //     // ==> return the "categoryOption" is invalid
+    //     if (
+    //         isDateAGreaterThanDateB(
+    //             { date: periodEndDate, calendar },
+    //             { date: categoryOptionEndDate, calendar: 'gregory' },
+    //             {
+    //                 calendar,
+    //                 inclusive: false,
+    //             }
+    //         )
+    //     ) {
+    //         // option end date is before period end date
+    //         return false
+    //     }
+    // }
+
+    // // option spans over entire period
+    // return true
+}
+
+/**
+ * 
+ * @param {*} attributeCombo 
+ * @param {*} categoryOptionMap {<category_id>: <category_option_id>, ...}
+ * @returns 
+ */
+export const findAttributeOptionCombo = (attributeCombo, categoryOptionMap) => {
+    const selectedCatOptionIds = Object.values(categoryOptionMap) // Get the category list
+    const catOptionComboList = attributeCombo.categoryOptionCombos
+    for( let i=0; i<catOptionComboList.length; i++ ) {
+        const attributeOptionCombo = catOptionComboList[i]
+        const catOptionIds = attributeOptionCombo.categoryOptions.map((item) => item.id)
+        if( areListsEqual(selectedCatOptionIds, catOptionIds) ) {
+            return attributeOptionCombo;
         }
     }
-
-    if (categoryOption.endDate) {
-        const categoryOptionEndDate = categoryOption.endDate
-        // date comparison (periodEndDate: system calendar, categoryOptionEndDate: ISO)
-        if (
-            isDateAGreaterThanDateB(
-                { date: periodEndDate, calendar },
-                { date: categoryOptionEndDate, calendar: 'gregory' },
-                {
-                    calendar,
-                    inclusive: false,
-                }
-            )
-        ) {
-            // option end date is before period end date
-            return false
-        }
-    }
-
-    // option spans over entire period
-    return true
+    
+    return;
 }

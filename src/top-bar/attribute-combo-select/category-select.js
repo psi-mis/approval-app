@@ -5,7 +5,8 @@ import {
 } from '@dhis2/ui'
 import PropTypes from 'prop-types'
 import React, { useState, useEffect } from 'react'
-import { areListsEqual, cloneJSON } from '../../utils/array-utils.js'
+import { cloneJSON } from '../../utils/array-utils.js'
+import { findAttributeOptionCombo } from '../../utils/caterogy-combo-utils.js'
 import css from './category-option-select.module.css'
 import MultipleCategoySelect from './multiple-category-select.js'
 import SingleCategoryMenu from './single-category-select.js'
@@ -63,23 +64,23 @@ export default function CategoySelect({
         }
         setSelectedItem(updatedSelected)
         
-        const selectedCatOptionCombo = findCategoryOptionCombo(updatedSelected)
+        const selectedCatOptionCombo = findAttributeOptionCombo(categoryCombo, updatedSelected)
         onChange(categoryCombo, updatedSelected, selectedCatOptionCombo )
     }
     
-    const findCategoryOptionCombo = (selectedItem) => {
-        const selectedCatOptionIds = Object.values(selectedItem)
-        const catOptionComboList = categoryCombo.categoryOptionCombos
-        for( let i=0; i<catOptionComboList.length; i++ ) {
-            const attributeOptionCombo = catOptionComboList[i]
-            const catOptionIds = attributeOptionCombo.categoryOptions.map((item) => item.id)
-            if( areListsEqual(selectedCatOptionIds, catOptionIds) ) {
-                return attributeOptionCombo;
-            }
-        }
+    // const findCategoryOptionCombo = (selectedItem) => {
+    //     const selectedCatOptionIds = Object.values(selectedItem)
+    //     const catOptionComboList = categoryCombo.categoryOptionCombos
+    //     for( let i=0; i<catOptionComboList.length; i++ ) {
+    //         const attributeOptionCombo = catOptionComboList[i]
+    //         const catOptionIds = attributeOptionCombo.categoryOptions.map((item) => item.id)
+    //         if( areListsEqual(selectedCatOptionIds, catOptionIds) ) {
+    //             return attributeOptionCombo;
+    //         }
+    //     }
         
-        return;
-    }
+    //     return;
+    // }
     
     const renderHideButton = () => {
         return ( <Button

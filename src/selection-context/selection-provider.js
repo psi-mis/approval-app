@@ -1,3 +1,4 @@
+import { useConfig } from '@dhis2/app-runtime'
 import PropTypes from 'prop-types'
 import React, { useEffect, useReducer } from 'react'
 import { useAppContext } from '../app-context/index.js'
@@ -18,6 +19,7 @@ const ACTIONS = {
 }
 
 const reducer = (state, { type, payload }) => {
+    
     switch (type) {
         case ACTIONS.SET_OPENED_SELECT:
             return {
@@ -44,7 +46,7 @@ const reducer = (state, { type, payload }) => {
                         ? state.period
                         : null,
                 attributeOptionCombo: state.attributeOptionCombo
-                    ? getAttributeOptionComboIdExistInWorkflow(payload.metadata, state.workflow, state.attributeOptionCombo?.id, state.orgUnit?.id)
+                    ? getAttributeOptionComboIdExistInWorkflow(payload.metadata, payload.workflow, state.attributeOptionCombo?.id, state.orgUnit, state.period, payload.calendar)
                     : null,
                 dataSet: null,
             }
@@ -57,15 +59,18 @@ const reducer = (state, { type, payload }) => {
                  */
                 openedSelect: payload.period?.id ? '' : state.openedSelect,
                 period: payload.period,
+                attributeOptionCombo: state.attributeOptionCombo
+                ? getAttributeOptionComboIdExistInWorkflow(payload.metadata, state.workflow, state.attributeOptionCombo?.id, state.orgUnit, payload.period, payload.calendar)
+                : null,
                 dataSet: null,
             }
         case ACTIONS.SELECT_ORG_UNIT:
             return {
                 ...state,
                 openedSelect: '',
-                orgUnit: payload.orgUnit, 
+                orgUnit: payload.orgUnit,
                 attributeOptionCombo: state.attributeOptionCombo
-                    ? getAttributeOptionComboIdExistInWorkflow(payload.metadata, state.workflow, state.attributeOptionCombo?.id, payload.orgUnit?.id)
+                    ? getAttributeOptionComboIdExistInWorkflow(payload.metadata, state.workflow, state.attributeOptionCombo?.id, payload.orgUnit, state.period, payload.calendar)
                     : null,
                 dataSet: null,
             }
@@ -83,7 +88,7 @@ const reducer = (state, { type, payload }) => {
         case ACTIONS.SET_STATE_FROM_QUERY_PARAMS:
             return {
                 openedSelect: '',
-                ...initialValues(payload.metadata, payload.dataApprovalWorkflows),
+                ...initialValues(payload.metadata, payload.dataApprovalWorkflows, payload.calendar),
             }
         default:
             return state
@@ -92,10 +97,12 @@ const reducer = (state, { type, payload }) => {
 
 const SelectionProvider = ({ children }) => {
     const { metadata, dataApprovalWorkflows } = useAppContext()
+    const { systemInfo = {} } = useConfig()
+    const { calendar = 'gregory' } = systemInfo
     const [{ openedSelect, workflow, period, orgUnit, dataSet, attributeOptionCombo}, dispatch] =
         useReducer(reducer, {
             openedSelect: '',
-            ...initialValues(metadata, dataApprovalWorkflows),
+            ...initialValues(metadata, dataApprovalWorkflows, calendar),
         })
 
     const providerValue = {
@@ -120,11 +127,11 @@ const SelectionProvider = ({ children }) => {
                 },
             }),
         selectWorkflow: (workflow) =>
-            dispatch({ type: ACTIONS.SELECT_WORKFLOW, payload: { metadata, workflow } }),
+            dispatch({ type: ACTIONS.SELECT_WORKFLOW, payload: { metadata, workflow, calendar } }),
         selectPeriod: (period) =>
-            dispatch({ type: ACTIONS.SELECT_PERIOD, payload: { period } }),
+            dispatch({ type: ACTIONS.SELECT_PERIOD, payload: { metadata, period, calendar } }),
         selectOrgUnit: (orgUnit) =>
-            dispatch({ type: ACTIONS.SELECT_ORG_UNIT, payload: { metadata, orgUnit } }),
+            dispatch({ type: ACTIONS.SELECT_ORG_UNIT, payload: { metadata, orgUnit, calendar } }),
         selectAttributeOptionCombo: (attributeOptionCombo) =>
             dispatch({ type: ACTIONS.SELECT_CAT_OPTION_COMBO, payload: { attributeOptionCombo } }),
         selectDataSet: (dataSet) =>
