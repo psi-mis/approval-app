@@ -1,6 +1,6 @@
 import { readQueryParams } from '../navigation/index.js'
 import { parsePeriodId } from '../shared/index.js'
-import { getAttributeOptionComboIdExistInWorkflow } from '../utils/caterogy-combo-utils.js'
+import { findAttributeOptionComboInWorkflow } from '../utils/caterogy-combo-utils.js'
 
 export const initialValues = (metadata, workflows, calendar) => {
     const queryParams = readQueryParams()
@@ -9,10 +9,10 @@ export const initialValues = (metadata, workflows, calendar) => {
     const workflow = initialWorkflowValue(workflows, wf)
     const period = initialPeriodValue(pe, workflow)
     const orgUnit = initialOrgUnitValue(ou, ouDisplayName)
-    const attributeOptionCombo = initialAttributeOptionComboValue(aoc, workflow, orgUnit, period, calendar, metadata)
+    const attributeComboData = initialAttributeOptionComboValue(aoc, workflow, orgUnit, period, calendar, metadata)
     const dataSet = initialDataSetValue(dataSetParam)
 
-    return {workflow, period, orgUnit, dataSet, attributeOptionCombo}
+    return {workflow, period, orgUnit, dataSet, attributeCombo: attributeComboData?.attributeCombo, attributeOptionCombo: attributeComboData?.attributeOptionCombo}
 }
 
 export const initialWorkflowValue = (workflows, workflowId) => {
@@ -56,7 +56,7 @@ export const initialAttributeOptionComboValue = (aoc, initialWorkflow = {}, orgU
         return null
     }
 
-    return getAttributeOptionComboIdExistInWorkflow( metadata, initialWorkflow, aoc, orgUnit, period, calendar )
+    return findAttributeOptionComboInWorkflow( metadata, initialWorkflow, aoc, orgUnit, period, calendar )
 }
 
 export const initialDataSetValue = (dataSetParam) => {

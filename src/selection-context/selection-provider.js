@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import React, { useEffect, useReducer } from 'react'
 import { useAppContext } from '../app-context/index.js'
 import { pushStateToHistory } from '../navigation/index.js'
-import { getAttributeOptionComboIdExistInWorkflow } from '../utils/caterogy-combo-utils.js'
+import { findAttributeOptionComboInWorkflow } from '../utils/caterogy-combo-utils.js'
 import { initialValues, initialWorkflowValue } from './initial-values.js'
 import { SelectionContext } from './selection-context.js'
 
@@ -13,6 +13,7 @@ const ACTIONS = {
     SELECT_WORKFLOW: 'SELECT_WORKFLOW',
     SELECT_PERIOD: 'SELECT_PERIOD',
     SELECT_ORG_UNIT: 'SELECT_ORG_UNIT',
+    SELECT_ATTRIBUTE_COMBO: 'SELECT_ATTRIBUTE_COMBO',
     SELECT_CAT_OPTION_COMBO: 'SELECT_CAT_OPTION_COMBO',
     SELECT_DATA_SET: 'SELECT_DATA_SET',
     SET_STATE_FROM_QUERY_PARAMS: 'SET_STATE_FROM_QUERY_PARAMS',
@@ -35,7 +36,8 @@ const reducer = (state, { type, payload }) => {
                 attributeOptionCombo: null,
                 dataSet: null,
             }
-        case ACTIONS.SELECT_WORKFLOW:
+        case ACTIONS.SELECT_WORKFLOW: {
+            const attributeOptionComboData = findAttributeOptionComboInWorkflow(payload.metadata, payload.workflow, state.attributeOptionCombo?.id, state.orgUnit, state.period, payload.calendar)
             return {
                 ...state,
                 openedSelect: '',
@@ -45,12 +47,16 @@ const reducer = (state, { type, payload }) => {
                     state.workflow?.periodType === payload.workflow?.periodType
                         ? state.period
                         : null,
+                attributeCombo: state.attributeCombo ? attributeOptionComboData?.attributeCombo : null,
                 attributeOptionCombo: state.attributeOptionCombo
-                    ? getAttributeOptionComboIdExistInWorkflow(payload.metadata, payload.workflow, state.attributeOptionCombo?.id, state.orgUnit, state.period, payload.calendar)
+                    ? attributeOptionComboData?.attributeOptionCombo
                     : null,
                 dataSet: null,
             }
-        case ACTIONS.SELECT_PERIOD:
+        }
+        case ACTIONS.SELECT_PERIOD: {
+            const attributeOptionComboData = findAttributeOptionComboInWorkflow(payload.metadata, state.workflow, state.attributeOptionCombo?.id, state.orgUnit, payload.period, payload.calendar)
+            
             return {
                 ...state,
                 /*
@@ -59,19 +65,30 @@ const reducer = (state, { type, payload }) => {
                  */
                 openedSelect: payload.period?.id ? '' : state.openedSelect,
                 period: payload.period,
+                attributeCombo: state.attributeCombo ? attributeOptionComboData?.attributeCombo : null,
                 attributeOptionCombo: state.attributeOptionCombo
-                ? getAttributeOptionComboIdExistInWorkflow(payload.metadata, state.workflow, state.attributeOptionCombo?.id, state.orgUnit, payload.period, payload.calendar)
-                : null,
+                    ? attributeOptionComboData?.attributeOptionCombo
+                    : null,
                 dataSet: null,
             }
-        case ACTIONS.SELECT_ORG_UNIT:
+        }
+        case ACTIONS.SELECT_ORG_UNIT: {
+            const attributeOptionComboData = findAttributeOptionComboInWorkflow(payload.metadata, state.workflow, state.attributeOptionCombo?.id, payload.orgUnit, state.period, payload.calendar)
             return {
                 ...state,
                 openedSelect: '',
                 orgUnit: payload.orgUnit,
+                attributeCombo: state.attributeCombo ? attributeOptionComboData?.attributeCombo : null,
                 attributeOptionCombo: state.attributeOptionCombo
-                    ? getAttributeOptionComboIdExistInWorkflow(payload.metadata, state.workflow, state.attributeOptionCombo?.id, payload.orgUnit, state.period, payload.calendar)
+                    ? attributeOptionComboData?.attributeOptionCombo
                     : null,
+                dataSet: null,
+            }
+        }
+        case ACTIONS.SELECT_ATTRIBUTE_COMBO:
+            return {
+                ...state,
+                attributeCombo: payload.attributeCombo,
                 dataSet: null,
             }
         case ACTIONS.SELECT_CAT_OPTION_COMBO:
@@ -99,7 +116,7 @@ const SelectionProvider = ({ children }) => {
     const { metadata, dataApprovalWorkflows } = useAppContext()
     const { systemInfo = {} } = useConfig()
     const { calendar = 'gregory' } = systemInfo
-    const [{ openedSelect, workflow, period, orgUnit, dataSet, attributeOptionCombo}, dispatch] =
+    const [{ openedSelect, workflow, period, orgUnit, dataSet, attributeCombo, attributeOptionCombo}, dispatch] =
         useReducer(reducer, {
             openedSelect: '',
             ...initialValues(metadata, dataApprovalWorkflows, calendar),
@@ -109,6 +126,7 @@ const SelectionProvider = ({ children }) => {
         workflow,
         period,
         orgUnit,
+        attributeCombo,
         attributeOptionCombo,
         openedSelect,
         dataSet,
@@ -132,6 +150,8 @@ const SelectionProvider = ({ children }) => {
             dispatch({ type: ACTIONS.SELECT_PERIOD, payload: { metadata, period, calendar } }),
         selectOrgUnit: (orgUnit) =>
             dispatch({ type: ACTIONS.SELECT_ORG_UNIT, payload: { metadata, orgUnit, calendar } }),
+        selectAttributeCombo: (attributeCombo) =>
+            dispatch({ type: ACTIONS.SELECT_ATTRIBUTE_COMBO, payload: { attributeCombo } }),
         selectAttributeOptionCombo: (attributeOptionCombo) =>
             dispatch({ type: ACTIONS.SELECT_CAT_OPTION_COMBO, payload: { attributeOptionCombo } }),
         selectDataSet: (dataSet) =>

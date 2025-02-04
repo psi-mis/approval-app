@@ -38,7 +38,7 @@ export default function CategoySelect({
         
         const catOptionIds = selected.categoryOptions.map((item => item.id))
         // Go through "Categories" of catCombo to find "CategoryOption" we need
-        for( var j=0; j< categoryCombo.categories.length; j++ ) {
+        for( var j=0; j< categoryCombo.categories?.length; j++ ) {
             const category = categoryCombo.categories[j]
             const foundCatOptions = category.categoryOptions.filter((item => catOptionIds.includes(item.id)))
             if( foundCatOptions.length > 0 ) {
@@ -67,20 +67,6 @@ export default function CategoySelect({
         const selectedCatOptionCombo = findAttributeOptionCombo(categoryCombo, updatedSelected)
         onChange(categoryCombo, updatedSelected, selectedCatOptionCombo )
     }
-    
-    // const findCategoryOptionCombo = (selectedItem) => {
-    //     const selectedCatOptionIds = Object.values(selectedItem)
-    //     const catOptionComboList = categoryCombo.categoryOptionCombos
-    //     for( let i=0; i<catOptionComboList.length; i++ ) {
-    //         const attributeOptionCombo = catOptionComboList[i]
-    //         const catOptionIds = attributeOptionCombo.categoryOptions.map((item) => item.id)
-    //         if( areListsEqual(selectedCatOptionIds, catOptionIds) ) {
-    //             return attributeOptionCombo;
-    //         }
-    //     }
-        
-    //     return;
-    // }
     
     const renderHideButton = () => {
         return ( <Button

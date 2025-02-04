@@ -31,7 +31,7 @@ const query = {
 const Display = ({ dataSetId }) => {
     const { metadata } = useAppContext()
     const selection = useSelectionContext()
-    const { orgUnit, workflow, period, attributeOptionCombo } = selection
+    const { orgUnit, workflow, period, attributeCombo, attributeOptionCombo } = selection
     const dataSets = filterDataSetsByAttributeOptionComboAndOrgUnit(metadata, workflow, orgUnit, attributeOptionCombo)
     const selectedDataSet = dataSets.find(({ id }) => id === dataSetId)
     const periodIds = selectedDataSet
@@ -42,7 +42,7 @@ const Display = ({ dataSetId }) => {
           ).map(({ id }) => id)
         : []
     const categoryFilter = attributeOptionCombo
-        ? getDataSetReportFilter(metadata, attributeOptionCombo)
+        ? getDataSetReportFilter(attributeCombo, attributeOptionCombo)
         : ""
 
     const { called, fetching, data, error, refetch } = useDataQuery(query, {

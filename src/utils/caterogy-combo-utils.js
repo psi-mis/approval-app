@@ -1,129 +1,130 @@
 import { areListsEqual, cloneJSON } from "./array-utils.js";
-import { isDateAGreaterThanDateB, isDateALessThanDateB } from "./date-utils.js";
+import { isDateALessThanDateB } from "./date-utils.js";
 
 export const getCategoryCombosByFilters = (metadata, workflow, orgUnit, period, calendar) => {
     if(workflow == null || orgUnit == null || period == null ) return [];
     
-    const categoryComboList = extractCategoryCombosByWorkflow(metadata, workflow)
-    
+    const categoryComboList = cloneJSON(extractCategoryCombosByWorkflow(metadata, workflow))
     // Filter category options by orgunit
     if( categoryComboList.length > 0 ) {
-        categoryComboList.map((categoryCombo) => categoryCombo.categories = filterCategoryOptionsByFilters(categoryCombo, orgUnit, period, calendar))
-        
+        categoryComboList.map((categoryCombo) => {
+            categoryCombo.categories = filterValidCategoryOptions(categoryCombo, orgUnit, period, calendar)
+            // markDefaultCategoryOptionCombos(categoryCombo)
+        })
     }
     
     return categoryComboList
 }
 
 const extractCategoryCombosByWorkflow = (metadata, workflow) => {
-    let categoryComboList = [];
-    if(workflow === null || !workflow.dataSets || workflow.dataSets.length == 0 ) {
-        categoryComboList = []
-    }
-    else if (workflow.dataSets) {
-        const dataSets = workflow.dataSets
-        for( const dataSet of dataSets) {
-            const valid = verifyCategoryComboAssignment(metadata, dataSet)
-            if(valid) {
-                const attributeCombo = cloneJSON(getAttributeComboById(metadata, dataSet.categoryCombo.id))
-                categoryComboList.push(attributeCombo)
-            }
-        }
-        
-        // Remove duplicate categoryCombos if any
-        categoryComboList = Object.values(
-            categoryComboList.reduce((acc, categoryCombo) => {
-              acc[categoryCombo.id] = categoryCombo // Use the `id` as the key to ensure uniqueness
-              return acc
-            }, {})
-        )
-    } 
-    
-    return cloneJSON(categoryComboList)
-}
+    if (!workflow?.dataSets?.length) return [];
 
-const filterCategoryOptionsByFilters = (categoryCombo, orgUnit, period, calendar) => {
-    if (!categoryCombo || !orgUnit || !period) {
-        return []
-    }
+    const categoryComboList = workflow.dataSets
+        .filter(dataSet => verifyCategoryComboAssignment(metadata, dataSet))
+        .map(dataSet => getAttributeComboById(metadata, dataSet.categoryCombo.id));
+
+    // Remove duplicates using a Set (ensuring uniqueness by `id`)
+    const uniqueCategoryCombos = Array.from(
+        new Map(categoryComboList.map(combo => [combo.id, combo])).values()
+    );
+
+    return uniqueCategoryCombos;
+};
+
+const filterValidCategoryOptions  = (categoryCombo, orgUnit, period, calendar) => {
+    if (!categoryCombo?.categories?.length || !orgUnit || !period) return [];
+
+    const periodStartDate = period?.startDate
+    const periodEndDate = period?.endDate
     
-    const periodStartDate = period.startDate
-    const periodEndDate = period.endDate
-    
-    const categories = categoryCombo.categories
-    const result = (categories || []).map((category) => ({
+    return categoryCombo.categories.map(category => ({
         ...category,
         categoryOptions: category.categoryOptions.filter(
             (categoryOption) =>
-                isOptionAssignedToOrgUnit({
-                    categoryOption,
-                    orgUnit,
-                }) &&
-                isOptionWithinPeriod({
-                    periodStartDate,
-                    periodEndDate,
-                    categoryOption,
-                    calendar,
-                })
+                isOptionAssignedToOrgUnit({ categoryOption, orgUnit }) &&
+                isOptionWithinPeriod({ periodStartDate, periodEndDate, categoryOption, calendar })
         ),
     }));
-    
-    return result;
 }
 
 export const getAttributeComboById = (metadata, attributeComboById) => {
-    return cloneJSON(metadata.categoryCombos.find((item => item.id === attributeComboById)))
+    return metadata.categoryCombos.find((item => item.id === attributeComboById))
 }
 
-export const getCategoryComboByCategoryOptionCombo = (metadata, categoryOptionComboId) => {
-    const categoryCombos = metadata.categoryCombos
-    for( const categoryCombo of categoryCombos ) {
-        const foundCatOptionCombo = categoryCombo.categoryOptionCombos?.find((item => item.id === categoryOptionComboId))
-        if( foundCatOptionCombo ) {
-            return categoryCombo
+export const getCategoryComboByCategoryOptionCombo = (attributeCombos, attrOptionComboId) => {
+    
+    for( const attrCombo of attributeCombos ) {
+        const foundAttrOptionCombo = attrCombo.categoryOptionCombos?.find((item => item.id === attrOptionComboId))
+        if( foundAttrOptionCombo ) {
+            return attrCombo
         }
     }
     
-    return
+    return null
 }
 
-export const getCategoryOptionComboById = (metadata, categoryOptionComboId) => {
-    const categoryCombos = metadata.categoryCombos
-    for( const categoryCombo of categoryCombos ) {
-        const foundCatOptionCombo = categoryCombo.categoryOptionCombos?.find((item => item.id === categoryOptionComboId))
-        if( foundCatOptionCombo ) {
-            return foundCatOptionCombo
-        }
+export const getCategoryOptionComboById = (attributeCombo, attrOptionComboId) => {
+   
+    const foundCatOptionCombo = attributeCombo.categoryOptionCombos?.find((item => item.id === attrOptionComboId))
+    if( foundCatOptionCombo ) {
+        return foundCatOptionCombo
     }
     
-    return
+    return null
 }
 
-export const getAttributeOptionComboIdExistInWorkflow = ( metadata, workflow, attributeOptionComboId, orgUnit, period, calendar) => {
-    const dataSets = JSON.parse(JSON.stringify(workflow.dataSets));
+export const findAttributeOptionComboInWorkflow = (metadata, workflow, attributeOptionComboId, orgUnit, period, calendar) => {
+    if (!workflow?.dataSets?.length) return null
     
-    const periodStartDate = period.startDate
-    const periodEndDate = period.endDate
+    // const periodStartDate = period?.startDate
+    // const periodEndDate = period?.endDate
     
-    if( dataSets.length > 0 ) {
-        for( const dataSet of dataSets) {
-            const categoryCombo = getAttributeComboById(metadata, dataSet.categoryCombo.id)
-            const foundAttrOptionCombo = categoryCombo.categoryOptionCombos.find((optionCombo => optionCombo.id === attributeOptionComboId))
-            if(foundAttrOptionCombo) {
-                const foundCategoryOptions = foundAttrOptionCombo.categoryOptions.filter(categoryOption =>
-                    isOptionAssignedToOrgUnit({ categoryOption, orgUnit }) &&
-                    isOptionWithinPeriod({ periodStartDate, periodEndDate, categoryOption, calendar })
-                );
-                
-                if (foundCategoryOptions.length > 0) {
-                    return foundAttrOptionCombo;
-                }
-            }
+    const dataSets = cloneJSON(workflow.dataSets)
+    
+    for( const dataSet of dataSets) {
+        const attributeCombo = cloneJSON(getAttributeComboById(metadata, dataSet.categoryCombo.id))
+        if (attributeCombo) {
+            const foundAttrOptionCombo = attributeCombo.categoryOptionCombos?.find((optionCombo) => optionCombo.id === attributeOptionComboId)
+            const isValid = isCategoryOptionComboValid(foundAttrOptionCombo?.id, attributeCombo, orgUnit, period, calendar)
+            if( isValid ) return { attributeCombo, attributeOptionCombo: foundAttrOptionCombo }
         }
     }
   
-    return
+    return null
 }
+
+const isCategoryOptionComboValid = (attrOptionComboId, categoryCombo, orgUnit, period, calendar) => {
+    if (!attrOptionComboId || !categoryCombo || !orgUnit || !period) return null;
+    
+     // Find the categoryOptionCombo by ID
+     const categoryOptionCombo = categoryCombo.categoryOptionCombos.find(
+        (combo) => combo.id === attrOptionComboId
+    );
+    
+    if (!categoryOptionCombo) return false;
+    
+    
+    const periodStartDate = period?.startDate
+    const periodEndDate = period?.endDate
+    
+    // Check if all categoryOptions in the combo are valid
+    return categoryOptionCombo.categoryOptions.every((optionRef) => {
+        // Find the actual categoryOption by ID
+        const categoryOption = categoryCombo.categories
+            .flatMap((category) => category.categoryOptions)
+            .find((option) => option.id === optionRef.id);
+
+        if (!categoryOption) return false;
+
+        // Check if categoryOption is assigned to the orgUnit
+        const isAssignedToOrgUnit = isOptionAssignedToOrgUnit({ categoryOption, orgUnit })
+        // Check if categoryOption falls within the period
+        const isWithinPeriod = isOptionWithinPeriod({ periodStartDate, periodEndDate, categoryOption, calendar })
+        
+
+        return isWithinPeriod && isAssignedToOrgUnit;
+    });
+};
 
 export const getCategoryOptionsByCategoryOptionCombo = (metadata, categoryOptionComboId) => {
     const categoryCombos = metadata.categoryCombos
@@ -137,28 +138,21 @@ export const getCategoryOptionsByCategoryOptionCombo = (metadata, categoryOption
     return
 }
 
-export const getDataSetReportFilter = (metadata, attributeOptionCombo) => {
-    if( !attributeOptionCombo ) return
+export const getDataSetReportFilter = (attributeCombo, attributeOptionCombo) => {
+    if (!attributeOptionCombo?.categoryOptions?.length) return null
     
-    const categoryOptions = attributeOptionCombo.categoryOptions
-    const catCombo = getCategoryComboByCategoryOptionCombo(metadata, attributeOptionCombo.id)
-    if( catCombo ) {
-        if( catCombo.isDefault ) return
-        // Find and map categoryOptions to categories as an array of strings
-        return categoryOptions.map(option => {
-            const category = catCombo.categories.find(category =>
-                category.categoryOptions.some(catOption => catOption.id === option.id)
-            )
-        
-            if (category) {
-                return `${category.id}:${option.id}`;
-            }
-            
-            return null // In case no match is found
-        }).filter(Boolean) // Remove any null values
-    }
+    if (!attributeCombo || attributeCombo.isDefault) return null
     
-    return
+     // Map categoryOptions to category-option pairs, filtering out nulls
+     return attributeOptionCombo.categoryOptions
+        .map(option => {
+            const category = attributeCombo.categories.find(cat =>
+                cat.categoryOptions.some(catOption => catOption.id === option.id)
+            );
+
+            return category ? `${category.id}:${option.id}` : null;
+        })
+        .filter(Boolean) // Remove null values
 }
 
 export const filterDataSetsByAttributeOptionComboAndOrgUnit = (metadata, workflow, orgUnit, attributeOptionCombo) => {
@@ -167,7 +161,7 @@ export const filterDataSetsByAttributeOptionComboAndOrgUnit = (metadata, workflo
     if( attributeOptionCombo ) {
         const dataSets = cloneJSON(workflow?.dataSets)
         for( const dataSet of dataSets ) {
-            const catCombo = getAttributeComboById(metadata, dataSet.categoryCombo.id)
+            const catCombo = cloneJSON(getAttributeComboById(metadata, dataSet.categoryCombo.id))
             // Check if the data set assigned to "attributeOptionCombo"
             const checkAttrOptionCombo = catCombo.categoryOptionCombos.find((dsCatOptionCombo => dsCatOptionCombo.id === attributeOptionCombo.id))
             // Check if the data set assigned to "orgUnit"
@@ -204,7 +198,7 @@ const verifyCategoryComboAssignment = (metadata, dataSet) => {
 }
 
 
-export const isOptionAssignedToOrgUnit = ({ categoryOption, orgUnit }) => {
+const isOptionAssignedToOrgUnit = ({ categoryOption, orgUnit }) => {
     // by default, ...
     if (!categoryOption?.organisationUnits?.length) {
         return true;
@@ -215,7 +209,7 @@ export const isOptionAssignedToOrgUnit = ({ categoryOption, orgUnit }) => {
     return found.length > 0
 }
 
-export const isOptionWithinPeriod = ({
+const isOptionWithinPeriod = ({
     periodStartDate,
     periodEndDate,
     categoryOption,
@@ -258,53 +252,6 @@ export const isOptionWithinPeriod = ({
     }
     
     return startDateValid && endDateValid
-
-    // dates are all server dates so we can ignore time zone adjustment
-    // use string comparison for time being to better handle non-gregory dates
-    // date comparison
-
-    // if (categoryOption.startDate) {
-    //     const categoryOptionStartDate = categoryOption.startDate
-    //     if (
-    //         // date comparison (periodStartDate: system calendar, categoryOptionStartDate: ISO)
-    //         // check if the the selected "period"'s startDate less then "categoryOption"'s startDate
-    //         //  ==> return the "categoryOption" is invalid
-    //         isDateALessThanDateB(
-    //             { date: periodStartDate, calendar },
-    //             { date: categoryOptionStartDate, calendar: 'gregory' },
-    //             {
-    //                 calendar,
-    //                 inclusive: false,
-    //             }
-    //         )
-    //     ) {
-    //         // option start date is after period start date
-    //         return false
-    //     }
-    // }
-
-    // if (categoryOption.endDate) {
-    //     const categoryOptionEndDate = categoryOption.endDate
-    //     // date comparison (periodEndDate: system calendar, categoryOptionEndDate: ISO)
-    //     // check if the the selected "period"'s endDate greater then "categoryOption"'s endDate
-    //     // ==> return the "categoryOption" is invalid
-    //     if (
-    //         isDateAGreaterThanDateB(
-    //             { date: periodEndDate, calendar },
-    //             { date: categoryOptionEndDate, calendar: 'gregory' },
-    //             {
-    //                 calendar,
-    //                 inclusive: false,
-    //             }
-    //         )
-    //     ) {
-    //         // option end date is before period end date
-    //         return false
-    //     }
-    // }
-
-    // // option spans over entire period
-    // return true
 }
 
 /**
