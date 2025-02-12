@@ -58,7 +58,7 @@ const WorkflowSelect = () => {
                     {filteredWorkflows.length === 0
                         ? <div className={classes.empty}>
                             <span>
-                                {i18n.t('No results found for  {{searchQuery}}', {
+                                {i18n.t('No results found for {{searchQuery}}', {
                                     searchQuery: searchQuery,
                                     nsSeparator: '-:-'})}
                             </span>
