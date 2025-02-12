@@ -65,9 +65,9 @@ const Display = ({ dataSetId }) => {
         return (
             <div className={styles.noData}>
                 <p>{i18n.t('Workflow "{{ workflowName }}", organisation unit "{{ orgunitName }}" and attribute option combo "{{ attrOptionComboName }}" does not contain any data sets.', {
-                    orgunitName: orgUnit.displayName,
-                    workflowName: workflow.displayName,
-                    attrOptionComboName: attributeOptionCombo.displayName
+                    orgunitName: orgUnit?.displayName,
+                    workflowName: workflow?.displayName,
+                    attrOptionComboName: attributeOptionCombo?.displayName
                 })}</p>
             </div>
         )
@@ -87,6 +87,16 @@ const Display = ({ dataSetId }) => {
         )
     }
 
+    // if( selectedDataSet ) {
+    //     <ErrorMessage title={i18n.t('Could not load approval data')}>
+    //         <p>{i18n.t('The selected workflow "{{workflowName}}" does not have any associated data sets.', {
+    //                 workflowName: workflow.displayName,
+    //                 nsSeparator: '-:-',
+    //             })}</p>
+    //         <p>{i18n.t("Please verify the workflow configuration or select a different workflow that includes data sets.")}</p>
+    //     </ErrorMessage>
+    // }
+    
     if ((!called && periodIds.length) || fetching) {
         return (
             <div className={styles.display}>

@@ -37,7 +37,7 @@ const WorkflowProvider = ({ children }) => {
         return (
             <ErrorMessage title={i18n.t('Could not load approval data')}>
                 <p>{i18n.t('The selected workflow "{{workflowName}}" does not have any associated data sets.', {
-                        workflowName: workflow.displayName,
+                        workflowName: workflow?.displayName,
                         nsSeparator: '-:-',
                     })}</p>
                 <p>{i18n.t("Please verify the workflow configuration or select a different workflow that includes data sets.")}</p>

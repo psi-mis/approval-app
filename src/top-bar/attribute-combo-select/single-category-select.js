@@ -25,7 +25,7 @@ export default function SingleCategoryMenu({
     return (
         <> 
             {/* Search Input */}
-            {filteredCategoryOptions.length > 4 && <div className={css.inputContainer}>
+            <div className={css.inputContainer}>
                 <input
                     type="text"
                     placeholder={i18n.t('Search for {{categoryName}}', {
@@ -34,21 +34,30 @@ export default function SingleCategoryMenu({
                     })}
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className={css.searchInput} // Add appropriate styling here
+                    className={css.searchInput}
                 />
-            </div> }
+            </div>
             
-            <Menu className={css.menu}>
-                {filteredCategoryOptions.map((catOption) => (
-                    <MenuItem
-                        key={`${category.id}-${catOption.id}`}
-                        className={css.bordered}
-                        active={selected[category.id] === catOption.id}
-                        onClick={() => onChange(category.id, catOption.id)}
-                        label={<span data-value={catOption.id}>{catOption.displayName}</span>}
-                    />
-                ))}
-            </Menu>
+            {filteredCategoryOptions.length === 0
+                ? <div className={css.empty}>
+                    <span>
+                        {i18n.t('No results found for  {{searchQuery}}', {
+                            searchQuery: searchQuery,
+                            nsSeparator: '-:-'})}
+                    </span>
+                </div>
+                        
+                : <Menu className={css.menu}>
+                    {filteredCategoryOptions.map((catOption) => (
+                        <MenuItem
+                            key={`${category.id}-${catOption.id}`}
+                            className={css.bordered}
+                            active={selected[category.id] === catOption.id}
+                            onClick={() => onChange(category.id, catOption.id)}
+                            label={<span data-value={catOption.id}>{catOption.displayName}</span>}
+                        />
+                    ))}
+                </Menu>}
         </>
     )
 }

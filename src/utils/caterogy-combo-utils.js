@@ -9,7 +9,6 @@ export const getCategoryCombosByFilters = (metadata, workflow, orgUnit, period, 
     if( categoryComboList.length > 0 ) {
         categoryComboList.map((categoryCombo) => {
             categoryCombo.categories = filterValidCategoryOptions(categoryCombo, orgUnit, period, calendar)
-            // markDefaultCategoryOptionCombos(categoryCombo)
         })
     }
     
