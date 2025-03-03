@@ -42,7 +42,7 @@
         "start-server-and-test": "^1.13.1"
     },
     "dependencies": {
-        "@dhis2/app-runtime": "^3.2.1",
+        "@dhis2/app-runtime": "^3.14.0",
         "@dhis2/multi-calendar-dates": "^2.0.0",
         "@dhis2/prop-types": "^1.6.4",
         "@dhis2/ui": "^7.2.7",
