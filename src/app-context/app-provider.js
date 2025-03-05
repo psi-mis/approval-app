@@ -23,7 +23,7 @@ const query = {
                 'displayName',
                 'dataApprovalLevels',
                 'periodType',
-                'dataSets[id,displayName,periodType,formType,categoryCombo[id],organisationUnits[id]]'
+                'dataSets[id,displayName,periodType,formType,categoryCombo[id],organisationUnits[id,path]]'
             ],
         },
     },
@@ -35,8 +35,8 @@ const query = {
                 'id',
                 'displayName',
                 'isDefault',
-                'categories[displayName,name,id,categoryOptions[id,displayName,name,startDate,endDate,organisationUnits[id]]]',
-                'categoryOptionCombos[id,displayName,categoryOptions[id,displayName,name,startDate,endDate,organisationUnits[id]]]',
+                'categories[displayName,name,id,categoryOptions[id,displayName,name,startDate,endDate,organisationUnits[id,path]]]',
+                'categoryOptionCombos[id,displayName,categoryOptions[id,displayName,name,startDate,endDate,organisationUnits[id,path]]]',
             ],
         },
     }

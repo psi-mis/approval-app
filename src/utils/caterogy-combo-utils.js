@@ -164,7 +164,9 @@ export const filterDataSetsByAttributeOptionComboAndOrgUnit = (metadata, workflo
             // Check if the data set assigned to "attributeOptionCombo"
             const checkAttrOptionCombo = catCombo.categoryOptionCombos.find((dsCatOptionCombo => dsCatOptionCombo.id === attributeOptionCombo.id))
             // Check if the data set assigned to "orgUnit"
-            const checkOrgunit = dataSet.organisationUnits.find((dsOrgUnit => dsOrgUnit.id === orgUnit.id))
+            // const checkOrgunit = dataSet.organisationUnits.find((dsOrgUnit => dsOrgUnit.id === orgUnit.id))
+            const checkOrgunit = dataSet.organisationUnits.find((dsOrgUnit => dsOrgUnit.path.indexOf(orgUnit?.path)>=0))
+            
             if( checkAttrOptionCombo && checkOrgunit ) {
                 result.push(dataSet)
             }
@@ -203,7 +205,7 @@ const isOptionAssignedToOrgUnit = ({ categoryOption, orgUnit }) => {
         return true;
     }
     
-    const found = categoryOption?.organisationUnits.filter(catOptionOrgUnit => orgUnit?.path.indexOf(catOptionOrgUnit.id)>=0)
+    const found = categoryOption?.organisationUnits.filter(catOptionOrgUnit => catOptionOrgUnit.path.indexOf(orgUnit?.path)>=0)
     
     return found.length > 0
 }
